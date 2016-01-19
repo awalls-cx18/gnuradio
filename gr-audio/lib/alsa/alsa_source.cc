@@ -207,7 +207,7 @@ namespace gr {
       if(error < 0)
         bail("get_period_size failed", error);
 
-      set_output_multiple(d_period_size);
+      set_output_multiple(static_cast<size_t>(d_period_size));
     }
 
     bool
@@ -290,8 +290,8 @@ namespace gr {
       delete [] d_buffer;
     }
 
-    int
-    alsa_source::work(int noutput_items,
+    ssize_t
+    alsa_source::work(size_t noutput_items,
                       gr_vector_const_void_star &input_items,
                       gr_vector_void_star &output_items)
     {
@@ -305,8 +305,8 @@ namespace gr {
     /*
      * Work function that deals with float to S16 conversion
      */
-    int
-    alsa_source::work_s16(int noutput_items,
+    ssize_t
+    alsa_source::work_s16(size_t noutput_items,
                           gr_vector_const_void_star &input_items,
                           gr_vector_void_star &output_items)
     {
@@ -336,15 +336,15 @@ namespace gr {
         }
       }
 
-      return d_period_size;
+      return static_cast<ssize_t>(d_period_size);
     }
 
     /*
      * Work function that deals with float to S16 conversion
      * and stereo to mono kludge...
      */
-    int
-    alsa_source::work_s16_2x1(int noutput_items,
+    ssize_t
+    alsa_source::work_s16_2x1(size_t noutput_items,
                               gr_vector_const_void_star &input_items,
                               gr_vector_void_star &output_items)
     {
@@ -374,14 +374,14 @@ namespace gr {
         out[0][i] = (float) t * scale_factor;
       }
 
-      return d_period_size;
+      return static_cast<ssize_t>(d_period_size);
     }
 
     /*
      * Work function that deals with float to S32 conversion
      */
-    int
-    alsa_source::work_s32(int noutput_items,
+    ssize_t
+    alsa_source::work_s32(size_t noutput_items,
                           gr_vector_const_void_star &input_items,
                           gr_vector_void_star &output_items)
     {
@@ -411,15 +411,15 @@ namespace gr {
         }
       }
 
-      return d_period_size;
+      return static_cast<ssize_t>(d_period_size);
     }
 
     /*
      * Work function that deals with float to S32 conversion
      * and stereo to mono kludge...
      */
-    int
-    alsa_source::work_s32_2x1(int noutput_items,
+    ssize_t
+    alsa_source::work_s32_2x1(size_t noutput_items,
                               gr_vector_const_void_star &input_items,
                               gr_vector_void_star &output_items)
     {
@@ -450,7 +450,7 @@ namespace gr {
         out[0][i] = (float)t * scale_factor;
       }
 
-      return d_period_size;
+      return static_cast<ssize_t>(d_period_size);
     }
 
     bool

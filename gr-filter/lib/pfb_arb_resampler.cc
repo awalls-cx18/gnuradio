@@ -211,11 +211,11 @@ namespace gr {
         return -adj * d_est_phase_change;
       }
 
-      int
+      size_t
       pfb_arb_resampler_ccf::filter(gr_complex *output, gr_complex *input,
-                                    int n_to_read, int &n_read)
+                                    size_t n_to_read, size_t &n_read)
       {
-        int i_out = 0, i_in = 0;
+        size_t i_out = 0, i_in = 0;
         unsigned int j = d_last_filter;;
         gr_complex o0, o1;
 
@@ -234,7 +234,7 @@ namespace gr {
             j += d_dec_rate + (int)floor(d_acc);
             d_acc = fmodf(d_acc, 1.0);
           }
-          i_in += (int)(j / d_int_rate);
+          i_in += (size_t)(j / d_int_rate);
           j = j % d_int_rate;
         }
         d_last_filter = j; // save last filter state for re-entry
@@ -422,11 +422,11 @@ namespace gr {
         return -adj * d_est_phase_change;
       }
 
-      int
+      size_t
       pfb_arb_resampler_ccc::filter(gr_complex *output, gr_complex *input,
-                                    int n_to_read, int &n_read)
+                                    size_t n_to_read, size_t &n_read)
       {
-        int i_out = 0, i_in = 0;
+        size_t i_out = 0, i_in = 0;
         unsigned int j = d_last_filter;;
         gr_complex o0, o1;
 
@@ -445,7 +445,7 @@ namespace gr {
             j += d_dec_rate + (int)floor(d_acc);
             d_acc = fmodf(d_acc, 1.0);
           }
-          i_in += (int)(j / d_int_rate);
+          i_in += (size_t)(j / d_int_rate);
           j = j % d_int_rate;
         }
         d_last_filter = j; // save last filter state for re-entry
@@ -633,11 +633,11 @@ namespace gr {
         return -adj * d_est_phase_change;
       }
 
-      int
+      size_t
       pfb_arb_resampler_fff::filter(float *output, float *input,
-                                    int n_to_read, int &n_read)
+                                    size_t n_to_read, size_t &n_read)
       {
-        int i_out = 0, i_in = 0;
+        size_t i_out = 0, i_in = 0;
         unsigned int j = d_last_filter;;
         float o0, o1;
 
@@ -656,7 +656,7 @@ namespace gr {
             j += d_dec_rate + (int)floor(d_acc);
             d_acc = fmodf(d_acc, 1.0);
           }
-          i_in += (int)(j / d_int_rate);
+          i_in += (size_t)(j / d_int_rate);
           j = j % d_int_rate;
         }
         d_last_filter = j; // save last filter state for re-entry

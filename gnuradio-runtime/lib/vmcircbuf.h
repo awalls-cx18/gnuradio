@@ -38,11 +38,11 @@ namespace gr {
   class GR_RUNTIME_API vmcircbuf
   {
   protected:
-    int d_size;
+    size_t d_size;
     char *d_base;
 
     // CREATORS
-    vmcircbuf(int size) : d_size(size), d_base(0) {};
+    vmcircbuf(size_t size) : d_size(size), d_base(0) {};
 
   public:
     virtual ~vmcircbuf();
@@ -78,7 +78,7 @@ namespace gr {
      *
      * Call this to create a doubly mapped circular buffer.
      */
-    virtual vmcircbuf *make(int size) = 0;
+    virtual vmcircbuf *make(size_t size) = 0;
   };
 
   /*
@@ -96,7 +96,7 @@ namespace gr {
     static vmcircbuf_factory *get_default_factory();
 
     static int granularity()         { return get_default_factory()->granularity(); }
-    static vmcircbuf *make(int size) { return get_default_factory()->make(size);    }
+    static vmcircbuf *make(size_t size) { return get_default_factory()->make(size);    }
 
     // N.B. not all factories are guaranteed to work.
     // It's too hard to check everything at config time, so we check at runtime

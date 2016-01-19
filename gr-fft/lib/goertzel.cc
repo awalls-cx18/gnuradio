@@ -30,13 +30,13 @@
 namespace gr {
   namespace fft {
 
-    goertzel::goertzel(int rate, int len, float freq)
+    goertzel::goertzel(int rate, size_t len, float freq)
     {
       set_params(rate, len, freq);
     }
 
     void
-    goertzel::set_params(int rate, int len, float freq)
+    goertzel::set_params(int rate, size_t len, float freq)
     {
       d_d1 = 0.0;
       d_d2 = 0.0;
@@ -54,7 +54,7 @@ namespace gr {
       d_d1 = 0.0;
       d_d2 = 0.0;
 
-      for(int i = 0; i < d_len; i++)
+      for(size_t i = 0; i < d_len; i++)
 	input(in[i]);
 
       return output();

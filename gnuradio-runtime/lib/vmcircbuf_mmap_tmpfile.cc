@@ -44,7 +44,7 @@
 
 namespace gr {
 
-  vmcircbuf_mmap_tmpfile::vmcircbuf_mmap_tmpfile (int size)
+  vmcircbuf_mmap_tmpfile::vmcircbuf_mmap_tmpfile (size_t size)
     : gr::vmcircbuf (size)
   {
 #if !defined(HAVE_MMAP)
@@ -53,8 +53,8 @@ namespace gr {
 #else
     gr::thread::scoped_lock guard(s_vm_mutex);
 
-    if(size <= 0 || (size % gr::pagesize ()) != 0) {
-      fprintf(stderr, "gr::vmcircbuf_mmap_tmpfile: invalid size = %d\n", size);
+    if((size % static_cast<size_t>(gr::pagesize ())) != 0) {
+      fprintf(stderr, "gr::vmcircbuf_mmap_tmpfile: invalid size = %zu\n", size);
       throw std::runtime_error("gr::vmcircbuf_mmap_tmpfile");
     }
 
@@ -187,7 +187,7 @@ namespace gr {
   }
 
   gr::vmcircbuf *
-  vmcircbuf_mmap_tmpfile_factory::make(int size)
+  vmcircbuf_mmap_tmpfile_factory::make(size_t size)
   {
     try {
       return new vmcircbuf_mmap_tmpfile(size);

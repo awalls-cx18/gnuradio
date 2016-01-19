@@ -62,20 +62,20 @@ namespace gr {
 
     action_type action;
 
-    int general_work_args_noutput_items;
-    std::vector<int> general_work_args_ninput_items;
+    size_t general_work_args_noutput_items;
+    std::vector<size_t> general_work_args_ninput_items;
     std::vector<void *> general_work_args_input_items; //TODO this should be const void*, but swig cant int cast it right
     std::vector<void *> general_work_args_output_items;
-    int general_work_args_return_value;
+    ssize_t general_work_args_return_value;
 
-    int work_args_ninput_items;
-    int work_args_noutput_items;
+    size_t work_args_ninput_items;
+    size_t work_args_noutput_items;
     std::vector<void *> work_args_input_items; //TODO this should be const void*, but swig cant int cast it right
     std::vector<void *> work_args_output_items;
-    int work_args_return_value;
+    ssize_t work_args_return_value;
 
-    int forecast_args_noutput_items;
-    std::vector<int> forecast_args_ninput_items_required;
+    size_t forecast_args_noutput_items;
+    std::vector<size_t> forecast_args_ninput_items_required;
 
     bool start_args_return_value;
 
@@ -123,11 +123,11 @@ namespace gr {
       return gr::block::name();
     }
 
-    unsigned block__history(void) const {
+    size_t block__history(void) const {
       return gr::block::history();
     }
 
-    void block__set_history(unsigned history) {
+    void block__set_history(size_t history) {
       return gr::block::set_history(history);
     }
 
@@ -139,23 +139,23 @@ namespace gr {
       return gr::block::fixed_rate();
     }
 
-    void block__set_output_multiple(int multiple) {
+    void block__set_output_multiple(size_t multiple) {
       return gr::block::set_output_multiple(multiple);
     }
 
-    int block__output_multiple(void) const {
+    size_t block__output_multiple(void) const {
       return gr::block::output_multiple();
     }
 
-    void block__consume(int which_input, int how_many_items) {
+    void block__consume(int which_input, size_t how_many_items) {
       return gr::block::consume(which_input, how_many_items);
     }
 
-    void block__consume_each(int how_many_items) {
+    void block__consume_each(size_t how_many_items) {
       return gr::block::consume_each(how_many_items);
     }
 
-    void block__produce(int which_output, int how_many_items) {
+    void block__produce(int which_output, size_t how_many_items) {
       return gr::block::produce(which_output, how_many_items);
     }
 

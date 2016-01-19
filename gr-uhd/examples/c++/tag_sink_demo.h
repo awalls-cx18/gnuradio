@@ -40,8 +40,8 @@ public:
         //NOP
     }
 
-    int work(
-        int ninput_items,
+    ssize_t work(
+        size_t ninput_items,
         gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items
     ){
@@ -62,6 +62,6 @@ public:
             << std::endl;
         }
 
-        return ninput_items;
+        return static_cast<ssize_t>(ninput_items);
     }
 };

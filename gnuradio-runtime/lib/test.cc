@@ -36,7 +36,7 @@ namespace gr {
   make_test(const std::string &name,
             int min_inputs, int max_inputs, unsigned int sizeof_input_item,
             int min_outputs, int max_outputs, unsigned int sizeof_output_item,
-            unsigned int history, unsigned int output_multiple, double relative_rate,
+            size_t history, size_t output_multiple, double relative_rate,
             bool fixed_rate, consume_type_t cons_type, produce_type_t prod_type)
   {
     return gnuradio::get_initial_sptr
@@ -51,8 +51,8 @@ namespace gr {
              unsigned int sizeof_input_item,
              int min_outputs, int max_outputs,
              unsigned int sizeof_output_item,
-             unsigned int history,
-             unsigned int output_multiple,
+             size_t history,
+             size_t output_multiple,
              double relative_rate,
              bool fixed_rate,
              consume_type_t cons_type, produce_type_t prod_type)
@@ -75,9 +75,9 @@ namespace gr {
     set_fixed_rate(fixed_rate);
   }
 
-  int
-  test::general_work(int noutput_items,
-                     gr_vector_int &ninput_items,
+  ssize_t
+  test::general_work(size_t noutput_items,
+                     gr_vector_size_t &ninput_items,
                      gr_vector_const_void_star &input_items,
                      gr_vector_void_star &output_items)
   {
@@ -86,7 +86,7 @@ namespace gr {
     unsigned noutputs= output_items.size();
     for(unsigned i = 0; i < ninputs; i++) {
       char * in=(char *)input_items[i];
-      if(ninput_items[i]< (int)(noutput_items+history())) {
+      if(ninput_items[i]< (noutput_items+history())) {
         std::cerr << "ERROR: ninput_items[" << i << "] < noutput_items+history()" << std::endl;
         std::cerr << "ninput_items[" << i << "] = " << ninput_items[i] <<  std::endl;
         std::cerr << "noutput_items+history() = " << noutput_items+history() <<  std::endl;
@@ -95,7 +95,7 @@ namespace gr {
         throw std::runtime_error ("test");
       }
       else {
-        for (int j = 0; j < ninput_items[i]; j++) {
+        for (size_t j = 0; j < ninput_items[i]; j++) {
           //Touch every available input_item
           //We use a class variable to avoid the compiler to optimize this away
           for(unsigned int k = 0; k < d_sizeof_input_item; k++)
@@ -127,9 +127,6 @@ namespace gr {
         case CONSUME_ONE:
           consume(i,1);
           break;
-        case CONSUME_MINUS_ONE:
-          consume(i,-1);
-          break;
         default:
           consume(i,noutput_items);
         }
@@ -138,7 +135,7 @@ namespace gr {
     for(unsigned i = 0; i < noutputs; i++) {
       char * out=(char *)output_items[i];
       {
-        for(int j=0;j<noutput_items;j++) {
+        for(size_t j=0;j<noutput_items;j++) {
           //Touch every available output_item
           for(unsigned int k=0;k<d_sizeof_output_item;k++)
             out[j*d_sizeof_input_item+k]=0;
@@ -151,7 +148,7 @@ namespace gr {
       for(int i = 0; i < common_nports; i++) {
         memcpy(output_items[i],input_items[i],noutput_items*d_sizeof_input_item);
       }
-    int noutput_items_produced=0;
+    size_t noutput_items_produced=0;
     switch(d_produce_type) {
     case PRODUCE_NOUTPUT_ITEMS:
       noutput_items_produced=noutput_items;

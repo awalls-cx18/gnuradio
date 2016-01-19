@@ -133,7 +133,7 @@ namespace gr {
 	 * \param input   The input vector to be filtered
 	 * \param output  The result of the filter operation
 	 */
-	int filter(int nitems, const float *input, float *output);
+	size_t filter(size_t nitems, const float *input, float *output);
       };
 
 
@@ -238,7 +238,7 @@ namespace gr {
 	 * \param input   The input vector to be filtered
 	 * \param output  The result of the filter operation
 	 */
-	int filter(int nitems, const gr_complex *input, gr_complex *output);
+	size_t filter(size_t nitems, const gr_complex *input, gr_complex *output);
       };
 
 
@@ -354,7 +354,7 @@ namespace gr {
 	 * \param input   The input vector to be filtered
 	 * \param output  The result of the filter operation
 	 */
-	int filter(int nitems, const gr_complex *input, gr_complex *output);
+	size_t filter(size_t nitems, const gr_complex *input, gr_complex *output);
       };
 
     } /* namespace kernel */

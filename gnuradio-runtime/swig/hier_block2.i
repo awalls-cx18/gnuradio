@@ -92,12 +92,12 @@ namespace gr {
     std::vector<int> processor_affinity();
 
     // Methods to manage block's min/max buffer sizes.
-    size_t max_output_buffer(int i);
-    void set_max_output_buffer(size_t max_output_buffer);
-    void set_max_output_buffer(int port, size_t max_output_buffer);
-    size_t min_output_buffer(int i);
-    void set_min_output_buffer(size_t min_output_buffer);
-    void set_min_output_buffer(int port, size_t min_output_buffer);
+    ssize_t max_output_buffer(size_t i);
+    void set_max_output_buffer(ssize_t max_output_buffer);
+    void set_max_output_buffer(size_t port, ssize_t max_output_buffer);
+    ssize_t min_output_buffer(size_t i);
+    void set_min_output_buffer(ssize_t min_output_buffer);
+    void set_min_output_buffer(size_t port, ssize_t min_output_buffer);
 
     gr::hier_block2_sptr to_hier_block2(); // Needed for Python type coercion
   };

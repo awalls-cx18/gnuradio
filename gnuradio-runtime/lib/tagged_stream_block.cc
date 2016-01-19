@@ -42,8 +42,8 @@ namespace gr {
 
   // This is evil hackery: We trick the scheduler into creating the right number of input items
   void
-  tagged_stream_block::forecast(int noutput_items,
-                                gr_vector_int &ninput_items_required)
+  tagged_stream_block::forecast(size_t noutput_items,
+                                gr_vector_size_t &ninput_items_required)
   {
     unsigned ninputs = ninput_items_required.size();
     for(unsigned i = 0; i < ninputs; i++) {
@@ -52,39 +52,39 @@ namespace gr {
       }
       else {
         // If there's no item, there's no tag--so there must at least be one!
-        ninput_items_required[i] = std::max(1, (int)std::floor((double) noutput_items / relative_rate() + 0.5));
+        ninput_items_required[i] = std::max(1, (size_t)std::floor((double) noutput_items / relative_rate() + 0.5));
       }
     }
   }
 
   void
   tagged_stream_block::parse_length_tags(const std::vector<std::vector<tag_t> > &tags,
-                                         gr_vector_int &n_input_items_reqd)
+                                         gr_vector_size_t &n_input_items_reqd)
   {
     for(unsigned i = 0; i < tags.size(); i++) {
       for(unsigned k = 0; k < tags[i].size(); k++) {
         if(tags[i][k].key == d_length_tag_key) {
-          n_input_items_reqd[i] = pmt::to_long(tags[i][k].value);
+          n_input_items_reqd[i] = static_cast<size_t>(pmt::to_long(tags[i][k].value));
           remove_item_tag(i, tags[i][k]);
         }
       }
     }
   }
 
-  int
-  tagged_stream_block::calculate_output_stream_length(const gr_vector_int &ninput_items)
+  size_t
+  tagged_stream_block::calculate_output_stream_length(const gr_vector_size_t &ninput_items)
   {
-    int noutput_items = *std::max_element(ninput_items.begin(), ninput_items.end());
-    return (int)std::floor(relative_rate() * noutput_items + 0.5);
+    size_t noutput_items = *std::max_element(ninput_items.begin(), ninput_items.end());
+    return (size_t)std::floor(relative_rate() * static_cast<double>(noutput_items) + 0.5);
   }
 
   void
-  tagged_stream_block::update_length_tags(int n_produced, int n_ports)
+  tagged_stream_block::update_length_tags(size_t n_produced, int n_ports)
   {
     for(int i = 0; i < n_ports; i++) {
       add_item_tag(i, nitems_written(i),
                    d_length_tag_key,
-                   pmt::from_long(n_produced));
+                   pmt::from_long(static_cast<long>(n_produced)));
     }
     return;
   }
@@ -97,12 +97,14 @@ namespace gr {
   }
 
 
-  int
-  tagged_stream_block::general_work(int noutput_items,
-                                    gr_vector_int &ninput_items,
+  ssize_t
+  tagged_stream_block::general_work(size_t noutput_items,
+                                    gr_vector_size_t &ninput_items,
                                     gr_vector_const_void_star &input_items,
                                     gr_vector_void_star &output_items)
   {
+    static const size_t NITEMS_INVALID = std::numeric_limits<size_t>::max();
+
     if(d_length_tag_key_str.empty()) {
       return work(noutput_items, ninput_items, input_items, output_items);
     }
@@ -114,11 +116,11 @@ namespace gr {
       for(unsigned i = 0; i < input_items.size(); i++) {
         get_tags_in_range(tags[i], i, nitems_read(i), nitems_read(i)+1);
       }
-      d_n_input_items_reqd.assign(input_items.size(), -1);
+      d_n_input_items_reqd.assign(input_items.size(), NITEMS_INVALID);
       parse_length_tags(tags, d_n_input_items_reqd);
     }
     for(unsigned i = 0; i < input_items.size(); i++) {
-      if(d_n_input_items_reqd[i] == -1) {
+      if(d_n_input_items_reqd[i] == NITEMS_INVALID) {
         GR_LOG_FATAL(d_logger, boost::format("Missing a required length tag on port %1% at item #%2%") % i % nitems_read(i));
         throw std::runtime_error("Missing length tag.");
       }
@@ -127,7 +129,7 @@ namespace gr {
       }
     }
 
-    int min_output_size = calculate_output_stream_length(d_n_input_items_reqd);
+    size_t min_output_size = calculate_output_stream_length(d_n_input_items_reqd);
     if(noutput_items < min_output_size) {
       set_min_noutput_items(min_output_size);
       return 0;
@@ -135,7 +137,7 @@ namespace gr {
     set_min_noutput_items(1);
 
     // WORK CALLED HERE //
-    int n_produced = work(noutput_items, d_n_input_items_reqd, input_items, output_items);
+    ssize_t n_produced = work(noutput_items, d_n_input_items_reqd, input_items, output_items);
     //////////////////////
 
     if(n_produced == WORK_DONE) {
@@ -145,7 +147,7 @@ namespace gr {
       consume(i, d_n_input_items_reqd[i]);
     }
     if (n_produced > 0) {
-      update_length_tags(n_produced, output_items.size());
+      update_length_tags(static_cast<size_t>(n_produced), output_items.size());
     }
 
     d_n_input_items_reqd.assign(input_items.size(), 0);

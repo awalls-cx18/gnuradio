@@ -119,7 +119,7 @@ namespace gr {
       for(int n = 0; n < nfilters; n++)
 	d_firs[n]->set_taps(xtaps[n]);
 
-      set_history(nt);
+      set_history(static_cast<size_t>(nt));
       d_updated = false;
     }
 
@@ -130,18 +130,18 @@ namespace gr {
     }
 
     void
-    @IMPL_NAME@::forecast(int noutput_items, gr_vector_int &ninput_items_required)
+    @IMPL_NAME@::forecast(size_t noutput_items, gr_vector_size_t &ninput_items_required)
     {
-      int nreqd = std::max((unsigned)1, (int)((double) (noutput_items+1) * \
+      size_t nreqd = std::max((size_t)1, (size_t)((double) (noutput_items+1) * \
 				        decimation() / interpolation()) + history() - 1);
       unsigned ninputs = ninput_items_required.size();
       for(unsigned i = 0; i < ninputs; i++)
 	ninput_items_required[i] = nreqd;
     }
 
-    int
-    @IMPL_NAME@::general_work(int noutput_items,
-			      gr_vector_int &ninput_items,
+    ssize_t
+    @IMPL_NAME@::general_work(size_t noutput_items,
+			      gr_vector_size_t &ninput_items,
 			      gr_vector_const_void_star &input_items,
 			      gr_vector_void_star &output_items)
     {
@@ -154,9 +154,9 @@ namespace gr {
       }
 
       unsigned int ctr = d_ctr;
-      int count = 0;
+      size_t count = 0;
 
-      int i = 0;
+      size_t i = 0;
       while((i < noutput_items) && (count < ninput_items[0])) {
 	out[i++] = d_firs[ctr]->filter(in);
 	ctr += decimation();
@@ -169,7 +169,7 @@ namespace gr {
 
       d_ctr = ctr;
       consume_each(count);
-      return i;
+      return static_cast<ssize_t>(i);
     }
 
   } /* namespace filter */

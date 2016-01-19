@@ -331,12 +331,12 @@ namespace gr {
     /***********************************************************************
      * Work
      **********************************************************************/
-    int
-    usrp_sink_impl::work(int noutput_items,
+    ssize_t
+    usrp_sink_impl::work(size_t noutput_items,
                          gr_vector_const_void_star &input_items,
                          gr_vector_void_star &output_items)
     {
-      int ninput_items = noutput_items; //cuz it's a sync block
+      size_t ninput_items = noutput_items; //cuz it's a sync block
 
       // default to send a mid-burst packet
       _metadata.start_of_burst = false;
@@ -353,7 +353,7 @@ namespace gr {
         //If a burst is started during this call to work(), tag_work() should have
         //been called and we should have _nitems_to_send > 0.
         if (_nitems_to_send > 0) {
-          ninput_items = std::min<long>(_nitems_to_send, ninput_items);
+          ninput_items = std::min<long>(_nitems_to_send, long(ninput_items));
           //if we run out of items to send, it's the end of the burst
           if(_nitems_to_send - long(ninput_items) == 0)
             _metadata.end_of_burst = true;
@@ -365,7 +365,7 @@ namespace gr {
           std::cerr << "tG" << std::flush;
           //increment the timespec by the number of samples dropped
           _metadata.time_spec += ::uhd::time_spec_t(0, ninput_items, _sample_rate);
-          return ninput_items;
+          return static_cast<ssize_t>(ninput_items);
         }
       }
 
@@ -388,7 +388,7 @@ namespace gr {
       _metadata.time_spec += ::uhd::time_spec_t(0, num_sent, _sample_rate);
 
       // Some post-processing tasks if we actually transmitted the entire burst
-      if (not _pending_cmds.empty() && num_sent == size_t(ninput_items)) {
+      if (not _pending_cmds.empty() && num_sent == ninput_items) {
         GR_LOG_DEBUG(d_debug_logger, boost::format("Executing %d pending commands.") % _pending_cmds.size());
         BOOST_FOREACH(const pmt::pmt_t &cmd_pmt, _pending_cmds) {
           msg_handler_command(cmd_pmt);
@@ -396,14 +396,14 @@ namespace gr {
         _pending_cmds.clear();
       }
 
-      return num_sent;
+      return static_cast<ssize_t>(num_sent);
     }
 
     /***********************************************************************
      * Tag Work
      **********************************************************************/
     void
-    usrp_sink_impl::tag_work(int &ninput_items)
+    usrp_sink_impl::tag_work(size_t &ninput_items)
     {
       //the for loop below assumes tags sorted by count low -> high
       std::sort(_tags.begin(), _tags.end(), tag_t::offset_compare);
@@ -554,7 +554,7 @@ namespace gr {
 
       // Only transmit up to and including end of burst,
       // or everything if no burst boundaries are found.
-      ninput_items = int(max_count - samp0_count);
+      ninput_items = size_t(max_count - samp0_count);
 
     } // end tag_work()
 

@@ -55,7 +55,7 @@ namespace gr {
 
       ~cfo_model_impl();
       void setup_rpc();
-      int work(int, gr_vector_const_void_star&, gr_vector_void_star&);
+      ssize_t work(size_t, gr_vector_const_void_star&, gr_vector_void_star&);
 
       void set_std_dev(double _dev){ d_std_dev_hz = _dev; d_noise = gr::analog::fastnoise_source_f::make(analog::GR_GAUSSIAN, d_std_dev_hz, d_noise_seed); }
       void set_max_dev(double _dev){ d_max_dev_hz = _dev; }

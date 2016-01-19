@@ -96,7 +96,7 @@ qa_fxpt_nco::t1()
   CPPUNIT_ASSERT_DOUBLES_EQUAL(ref_nco.get_freq(), new_nco.get_freq(), SIN_COS_TOLERANCE);
 
   ref_nco.sincos((gr_complex*)ref_block, SIN_COS_BLOCK_SIZE);
-  new_nco.sincos((gr_complex*)new_block, SIN_COS_BLOCK_SIZE);
+  new_nco.sincos((gr_complex*)new_block, static_cast<size_t>(SIN_COS_BLOCK_SIZE));
 
   for(int i = 0; i < SIN_COS_BLOCK_SIZE; i++) {
     CPPUNIT_ASSERT_DOUBLES_EQUAL (ref_block[i].real(), new_block[i].real(), SIN_COS_TOLERANCE);

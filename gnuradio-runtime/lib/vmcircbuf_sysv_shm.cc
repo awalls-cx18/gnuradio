@@ -44,7 +44,7 @@
 
 namespace gr {
 
-  vmcircbuf_sysv_shm::vmcircbuf_sysv_shm(int size)
+  vmcircbuf_sysv_shm::vmcircbuf_sysv_shm(size_t size)
     : gr::vmcircbuf(size)
   {
 #if !defined(HAVE_SYS_SHM_H)
@@ -54,10 +54,10 @@ namespace gr {
 
     gr::thread::scoped_lock guard(s_vm_mutex);
 
-    int pagesize = gr::pagesize();
+    size_t pagesize = static_cast<size_t>(gr::pagesize());
 
-    if(size <= 0 || (size % pagesize) != 0) {
-      fprintf(stderr, "gr::vmcircbuf_sysv_shm: invalid size = %d\n", size);
+    if((size % pagesize) != 0) {
+      fprintf(stderr, "gr::vmcircbuf_sysv_shm: invalid size = %zu\n", size);
       throw std::runtime_error("gr::vmcircbuf_sysv_shm");
     }
 
@@ -197,7 +197,7 @@ namespace gr {
   }
 
   gr::vmcircbuf *
-  vmcircbuf_sysv_shm_factory::make(int size)
+  vmcircbuf_sysv_shm_factory::make(size_t size)
   {
     try {
       return new vmcircbuf_sysv_shm(size);

@@ -79,7 +79,7 @@ namespace gr {
 
       bool check_topology(int ninputs, int noutputs);
 
-      int work(int noutput_items,
+      ssize_t work(size_t noutput_items,
                gr_vector_const_void_star &input_items,
                gr_vector_void_star &output_items);
     };

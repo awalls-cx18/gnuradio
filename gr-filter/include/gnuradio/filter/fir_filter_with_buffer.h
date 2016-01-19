@@ -94,7 +94,7 @@ namespace gr {
 	 */
 	void filterN(float output[],
 		     const float input[],
-		     unsigned long n);
+		     size_t n);
 
 	/*!
 	 * \brief compute an array of N output values, decimating the input
@@ -104,7 +104,7 @@ namespace gr {
 	 * compute the output values.
 	 */
 	void filterNdec(float output[], const float input[],
-			unsigned long n, unsigned long decimate);
+			size_t n, unsigned long decimate);
 
 	// ACCESSORS
 
@@ -191,7 +191,7 @@ namespace gr {
 	 */
 	void filterN(gr_complex output[],
 		     const gr_complex input[],
-		     unsigned long n);
+		     size_t n);
 
 	/*!
 	 * \brief compute an array of N output values, decimating the input
@@ -201,7 +201,7 @@ namespace gr {
 	 * compute the output values.
 	 */
 	void filterNdec(gr_complex output[], const gr_complex input[],
-			unsigned long n, unsigned long decimate);
+			size_t n, unsigned long decimate);
 
 	// ACCESSORS
 
@@ -288,7 +288,7 @@ namespace gr {
 	 */
 	void filterN(gr_complex output[],
 		     const gr_complex input[],
-		     unsigned long n);
+		     size_t n);
 
 	/*!
 	 * \brief compute an array of N output values, decimating the input
@@ -298,7 +298,7 @@ namespace gr {
 	 * compute the output values.
 	 */
 	void filterNdec(gr_complex output[], const gr_complex input[],
-			unsigned long n, unsigned long decimate);
+			size_t n, unsigned long decimate);
 
 	// ACCESSORS
 

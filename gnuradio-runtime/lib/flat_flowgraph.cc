@@ -40,7 +40,7 @@ namespace gr {
 // 32Kbyte buffer size between blocks
 #define GR_FIXED_BUFFER_SIZE (32*(1L<<10))
 
-  static const unsigned int s_fixed_buffer_size = GR_FIXED_BUFFER_SIZE;
+  static const size_t s_fixed_buffer_size = GR_FIXED_BUFFER_SIZE;
 
   flat_flowgraph_sptr
   make_flat_flowgraph()
@@ -102,7 +102,7 @@ namespace gr {
       std::cout << "Creating block detail for " << block << std::endl;
 
     for(int i = 0; i < noutputs; i++) {
-      grblock->expand_minmax_buffer(i);
+      grblock->expand_minmax_buffer((static_cast<size_t>(i));
 
       buffer_sptr buffer = allocate_buffer(block, i);
       if(FLAT_FLOWGRAPH_DEBUG)
@@ -114,7 +114,7 @@ namespace gr {
         GR_LOG_WARN(d_logger, boost::format("Block (%1%) max output buffer set to %2%"
                                             " instead of requested %3%") \
                     % grblock->alias() % buffer->bufsize() % grblock->max_output_buffer(i));
-      grblock->set_max_output_buffer(i, buffer->bufsize());
+      grblock->set_max_output_buffer(i, static_cast<ssize_t>(buffer->bufsize()));
     }
 
     return detail;
@@ -126,12 +126,12 @@ namespace gr {
     block_sptr grblock = cast_to_block_sptr(block);
     if(!grblock)
       throw std::runtime_error("allocate_buffer found non-gr::block");
-    int item_size = block->output_signature()->sizeof_stream_item(port);
+    size_t item_size = block->output_signature()->sizeof_stream_item(port);
 
     // *2 because we're now only filling them 1/2 way in order to
     // increase the available parallelism when using the TPB scheduler.
     // (We're double buffering, where we used to single buffer)
-    int nitems = s_fixed_buffer_size * 2 / item_size;
+    size_t nitems = s_fixed_buffer_size * 2 / item_size;
 
     // Make sure there are at least twice the output_multiple no. of items
     if(nitems < 2*grblock->output_multiple())	// Note: this means output_multiple()
@@ -144,13 +144,13 @@ namespace gr {
     // limit buffer size if indicated
     if(grblock->max_output_buffer(port) > 0) {
       //std::cout << "constraining output items to " << block->max_output_buffer(port) << "\n";
-      nitems = std::min((long)nitems, (long)grblock->max_output_buffer(port));
+      nitems = std::min(nitems, static_cast<size_t>(grblock->max_output_buffer(port)));
       nitems -= nitems%grblock->output_multiple();
       if(nitems < 1)
         throw std::runtime_error("problems allocating a buffer with the given max output buffer constraint!");
     }
     else if(grblock->min_output_buffer(port) > 0) {
-      nitems = std::max((long)nitems, (long)grblock->min_output_buffer(port));
+      nitems = std::max(nitems, static_cast<size_t>(grblock->min_output_buffer(port)));
       nitems -= nitems%grblock->output_multiple();
       if(nitems < 1)
         throw std::runtime_error("problems allocating a buffer with the given min output buffer constraint!");
@@ -162,9 +162,9 @@ namespace gr {
         throw std::runtime_error("allocate_buffer found non-gr::block");
 
       double decimation = (1.0/dgrblock->relative_rate());
-      int multiple      = dgrblock->output_multiple();
-      int history       = dgrblock->history();
-      nitems = std::max(nitems, static_cast<int>(2*(decimation*multiple+history)));
+      size_t multiple   = dgrblock->output_multiple();
+      size_t history    = dgrblock->history();
+      nitems = std::max(nitems, 2*(static_cast<size_t>(decimation*multiple)+history));
     }
 
     //  std::cout << "make_buffer(" << nitems << ", " << item_size << ", " << grblock << "\n";
@@ -317,13 +317,14 @@ namespace gr {
   void
   flat_flowgraph::setup_buffer_alignment(block_sptr block)
   {
-    const int alignment = volk_get_alignment();
+    const size_t alignment = volk_get_alignment();
     for(int i = 0; i < block->detail()->ninputs(); i++) {
       void *r = (void*)block->detail()->input(i)->read_pointer();
-      unsigned long int ri = (unsigned long int)r % alignment;
+      size_t ri = (size_t)r % alignment;
       //std::cerr << "reader: " << r << "  alignment: " << ri << std::endl;
       if(ri != 0) {
         size_t itemsize = block->detail()->input(i)->get_sizeof_item();
+        // TODO alignment is in bytes, but update_read_pointer() wants items
         block->detail()->input(i)->update_read_pointer(alignment-ri/itemsize);
       }
       block->set_unaligned(0);
@@ -332,10 +333,11 @@ namespace gr {
 
     for(int i = 0; i < block->detail()->noutputs(); i++) {
       void *w = (void*)block->detail()->output(i)->write_pointer();
-      unsigned long int wi = (unsigned long int)w % alignment;
+      size_t wi = (size_t)w % alignment;
       //std::cerr << "writer: " << w << "  alignment: " << wi << std::endl;
       if(wi != 0) {
         size_t itemsize = block->detail()->output(i)->get_sizeof_item();
+        // TODO alignment is in bytes, but update_write_pointer() wants items
         block->detail()->output(i)->update_write_pointer(alignment-wi/itemsize);
       }
       block->set_unaligned(0);

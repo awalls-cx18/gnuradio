@@ -60,8 +60,8 @@ namespace gr {
       }
     }
 
-    int
-    single_pole_iir_filter_cc_impl::work(int noutput_items,
+    ssize_t
+    single_pole_iir_filter_cc_impl::work(size_t noutput_items,
 					 gr_vector_const_void_star &input_items,
 					 gr_vector_void_star &output_items)
     {
@@ -70,19 +70,19 @@ namespace gr {
       unsigned int vlen = d_vlen;
 
       if(d_vlen == 1) {
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  out[i] = d_iir[0].filter(in[i]);
 	}
       }
       else {
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  for(unsigned int j = 0; j < vlen; j++) {
 	    *out++ = d_iir[j].filter(*in++);
 	  }
 	}
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     };
 
   } /* namespace filter */

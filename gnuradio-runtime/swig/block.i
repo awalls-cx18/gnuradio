@@ -42,13 +42,13 @@ class gr::block : public gr::basic_block
 
   virtual ~block ();
 
-  unsigned history () const;
+  size_t history () const;
 
   void declare_sample_delay(int which, int delay);
   void declare_sample_delay(unsigned int delay);
   unsigned sample_delay(int which) const;
 
-  int  output_multiple () const;
+  size_t output_multiple () const;
   double relative_rate () const;
 
   bool start();
@@ -58,20 +58,20 @@ class gr::block : public gr::basic_block
   uint64_t nitems_written(unsigned int which_output);
 
   // Methods to manage the block's max_noutput_items size.
-  int max_noutput_items();
-  void set_max_noutput_items(int m);
+  size_t max_noutput_items();
+  void set_max_noutput_items(size_t m);
   void unset_max_noutput_items();
   bool is_set_max_noutput_items();
-  void set_min_noutput_items(int m);
-  int min_noutput_items() const;
+  void set_min_noutput_items(size_t m);
+  size_t min_noutput_items() const;
 
   // Methods to manage block's min/max buffer sizes.
-  long max_output_buffer(int i);
-  void set_max_output_buffer(long max_output_buffer);
-  void set_max_output_buffer(int port, long max_output_buffer);
-  long min_output_buffer(int i);
-  void set_min_output_buffer(long min_output_buffer);
-  void set_min_output_buffer(int port, long min_output_buffer);
+  ssize_t max_output_buffer(size_t i);
+  void set_max_output_buffer(ssize_t max_output_buffer);
+  void set_max_output_buffer(size_t port, ssize_t max_output_buffer);
+  ssize_t min_output_buffer(size_t i);
+  void set_min_output_buffer(ssize_t min_output_buffer);
+  void set_min_output_buffer(size_t port, ssize_t min_output_buffer);
 
   // Methods to access performance counters
   float pc_noutput_items();

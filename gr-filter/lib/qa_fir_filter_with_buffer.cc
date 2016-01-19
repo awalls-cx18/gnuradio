@@ -151,7 +151,7 @@ namespace gr {
 
 	    // zero the output, then do the filtering
 	    memset(actual_output, 0, OUTPUT_LEN*sizeof(o_type));
-	    f1->filterNdec(actual_output, input, ol/decimate, decimate);
+	    f1->filterNdec(actual_output, input, static_cast<size_t>(ol/decimate), decimate);
 
 	    // check results
 	    //
@@ -267,7 +267,7 @@ namespace gr {
 
 	    // zero the output, then do the filtering
 	    memset(actual_output, 0, OUTPUT_LEN*sizeof(o_type));
-	    f1->filterNdec(actual_output, input, ol/decimate, decimate);
+	    f1->filterNdec(actual_output, input, static_cast<size_t>(ol/decimate), decimate);
 
 	    // check results
 	    //
@@ -383,7 +383,7 @@ namespace gr {
 
 	    // zero the output, then do the filtering
 	    memset(actual_output, 0, OUTPUT_LEN*sizeof(gr_complex));
-	    f1->filterNdec(actual_output, input, ol/decimate, decimate);
+	    f1->filterNdec(actual_output, input, static_cast<size_t>(ol/decimate), decimate);
 
 	    // check results
 	    //

@@ -96,8 +96,8 @@ public:
         this->add_item_tag(0/*chan0*/, tag_count, key, value, srcid);
     }
 
-    int work(
-        int noutput_items,
+    ssize_t work(
+        size_t noutput_items,
         gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items)
     {
@@ -137,7 +137,7 @@ public:
         //Handle the end of burst condition.
         //Tag an end of burst and return early.
         //the next work call will be a start of burst.
-        if (_samps_left_in_burst < size_t(noutput_items)){
+        if (_samps_left_in_burst < noutput_items){
             if (pmt::is_null(_length_tag_key))
                 this->make_eob_tag(this->nitems_written(0) + _samps_left_in_burst - 1);
             else if (_firstrun){
@@ -145,11 +145,11 @@ public:
                 this->make_length_tag(this->nitems_written(0), 1);
             }
             _do_new_burst = true;
-            noutput_items = _samps_left_in_burst;
+            noutput_items = static_cast<size_t>(_samps_left_in_burst);
         }
 
         _samps_left_in_burst -= noutput_items;
-        return noutput_items;
+        return static_cast<ssize_t>(noutput_items);
     }
 
 private:

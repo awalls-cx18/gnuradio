@@ -43,7 +43,7 @@ namespace gr {
     ~top_block_impl();
 
     // Create and start scheduler threads
-    void start(int max_noutput_items=100000000);
+    void start(size_t max_noutput_items=100000000);
 
     // Signal scheduler threads to stop
     void stop();
@@ -67,10 +67,10 @@ namespace gr {
     void dump();
 
     // Get the number of max noutput_items in the flowgraph
-    int max_noutput_items();
+    size_t max_noutput_items();
 
     // Set the maximum number of noutput_items in the flowgraph
-    void set_max_noutput_items(int nmax);
+    void set_max_noutput_items(size_t nmax);
 
   protected:
     enum tb_state { IDLE, RUNNING };
@@ -83,7 +83,7 @@ namespace gr {
     tb_state d_state;
     int d_lock_count;
     boost::condition_variable d_lock_cond;
-    int d_max_noutput_items;
+    size_t d_max_noutput_items;
 
   private:
     void restart();

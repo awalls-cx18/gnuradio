@@ -63,7 +63,7 @@ namespace gr {
       std::vector<gr_complex> dummy_taps;
       d_composite_fir = new kernel::@CFIR_TYPE@(decimation, dummy_taps);
 
-      set_history(d_proto_taps.size());
+      set_history(static_cast<size_t>(d_proto_taps.size()));
       build_composite_fir();
 
       message_port_register_in(pmt::mp("freq"));
@@ -143,8 +143,8 @@ namespace gr {
       }
     }
 
-    int
-    @IMPL_NAME@::work(int noutput_items,
+    ssize_t
+    @IMPL_NAME@::work(size_t noutput_items,
 		      gr_vector_const_void_star &input_items,
 		      gr_vector_void_star &output_items)
     {
@@ -153,7 +153,7 @@ namespace gr {
 
       // rebuild composite FIR if the center freq has changed
       if(d_updated) {
-	set_history(d_proto_taps.size());
+        set_history(static_cast<size_t>(d_proto_taps.size()));
 	build_composite_fir();
 	d_updated = false;
 
@@ -164,13 +164,13 @@ namespace gr {
 	return 0;		     // history requirements may have changed.
       }
 
-      unsigned j = 0;
-      for (int i = 0; i < noutput_items; i++){
+      size_t j = 0;
+      for (size_t i = 0; i < noutput_items; i++){
         out[i] = d_r.rotate(d_composite_fir->filter(&in[j]));
-        j += decimation();
+        j += static_cast<size_t>(decimation());
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace filter */

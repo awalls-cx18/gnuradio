@@ -68,10 +68,10 @@ namespace gr {
 
       if(d_use_fft_filters) {
         set_history(1);
-        set_output_multiple(d_fft_filters[0]->filtersize() - d_fft_filters[0]->ntaps() + 1);
+        set_output_multiple(static_cast<size_t>(d_fft_filters[0]->filtersize() - d_fft_filters[0]->ntaps() + 1));
       }
       else {
-        set_history(d_taps_per_filter);
+        set_history(static_cast<size_t>(d_taps_per_filter));
       }
     }
 
@@ -86,7 +86,7 @@ namespace gr {
       gr::thread::scoped_lock guard(d_mutex);
 
       polyphase_filterbank::set_taps(taps);
-      set_history(d_taps_per_filter);
+      set_history(static_cast<size_t>(d_taps_per_filter));
       d_updated = true;
     }
 
@@ -109,8 +109,8 @@ namespace gr {
         d_chan = chan;
     }
 
-    int
-    pfb_decimator_ccf_impl::work(int noutput_items,
+    ssize_t
+    pfb_decimator_ccf_impl::work(size_t noutput_items,
 				 gr_vector_const_void_star &input_items,
 				 gr_vector_void_star &output_items)
     {
@@ -139,15 +139,15 @@ namespace gr {
       }
     }
 
-    int
-    pfb_decimator_ccf_impl::work_fir_exp(int noutput_items,
+    ssize_t
+    pfb_decimator_ccf_impl::work_fir_exp(size_t noutput_items,
                                          gr_vector_const_void_star &input_items,
                                          gr_vector_void_star &output_items)
     {
       gr_complex *in;
       gr_complex *out = (gr_complex *)output_items[0];
 
-      int i;
+      size_t i;
       for(i = 0; i < noutput_items; i++) {
 	// Move through filters from bottom to top
 	out[i] = 0;
@@ -158,18 +158,18 @@ namespace gr {
 	}
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
-    int
-    pfb_decimator_ccf_impl::work_fir_fft(int noutput_items,
+    ssize_t
+    pfb_decimator_ccf_impl::work_fir_fft(size_t noutput_items,
                                          gr_vector_const_void_star &input_items,
                                          gr_vector_void_star &output_items)
     {
       gr_complex *in;
       gr_complex *out = (gr_complex *)output_items[0];
 
-      int i;
+      size_t i;
       for(i = 0; i < noutput_items; i++) {
 	// Move through filters from bottom to top
 	out[i] = 0;
@@ -186,24 +186,24 @@ namespace gr {
         out[i] = d_fft->get_outbuf()[d_chan];
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
-    int
-    pfb_decimator_ccf_impl::work_fft_exp(int noutput_items,
+    ssize_t
+    pfb_decimator_ccf_impl::work_fft_exp(size_t noutput_items,
                                          gr_vector_const_void_star &input_items,
                                          gr_vector_void_star &output_items)
     {
       gr_complex *in;
       gr_complex *out = (gr_complex *)output_items[0];
 
-      int i;
+      size_t i;
       gr_complex *tmp = fft::malloc_complex(noutput_items*d_rate);
 
       // Filter each input stream by the FFT filters; do all
       // noutput_items at once to avoid repeated calls to the FFT
       // setup and operation.
-      for(unsigned int j = 0; j < d_rate; j++) {
+      for(size_t j = 0; j < static_cast<size_t>(d_rate); j++) {
         in = (gr_complex*)input_items[d_rate-j-1];
         d_fft_filters[j]->filter(noutput_items, in, &(tmp[j*noutput_items]));
       }
@@ -213,26 +213,26 @@ namespace gr {
       //   y[i] = \sum_{j=0}{M-1} (x[j][i]*exp(2j \pi j k / M))
       for(i = 0; i < noutput_items; i++) {
         out[i] = 0;
-        for(unsigned int j = 0; j < d_rate; j++) {
+        for(size_t j = 0; j < static_cast<size_t>(d_rate); j++) {
           out[i] += tmp[j*noutput_items+i]*d_rotator[j];
         }
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
-    int
-    pfb_decimator_ccf_impl::work_fft_fft(int noutput_items,
+    ssize_t
+    pfb_decimator_ccf_impl::work_fft_fft(size_t noutput_items,
                                          gr_vector_const_void_star &input_items,
                                          gr_vector_void_star &output_items)
     {
       gr_complex *in;
       gr_complex *out = (gr_complex *)output_items[0];
 
-      int i;
+      size_t i;
       gr_complex *tmp = fft::malloc_complex(noutput_items*d_rate);
 
-      for(unsigned int j = 0; j < d_rate; j++) {
+      for(size_t j = 0; j < static_cast<size_t>(d_rate); j++) {
         in = (gr_complex*)input_items[d_rate-j-1];
         d_fft_filters[j]->filter(noutput_items, in, &tmp[j*noutput_items]);
       }
@@ -240,7 +240,7 @@ namespace gr {
       // Performs the rotate and add operations by implementing it as
       // an FFT.
       for(i = 0; i < noutput_items; i++) {
-        for(unsigned int j = 0; j < d_rate; j++) {
+        for(size_t j = 0; j < static_cast<size_t>(d_rate); j++) {
           d_fft->get_inbuf()[j] = tmp[j*noutput_items + i];
         }
 
@@ -252,7 +252,7 @@ namespace gr {
       }
 
       fft::free(tmp);
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
 

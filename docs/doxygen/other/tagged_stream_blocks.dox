@@ -85,9 +85,9 @@ namespace gr {
       crc32_bb_impl(bool check, const std::string& len_tag_key);
       ~crc32_bb_impl();
 
-      int calculate_output_stream_length(const gr_vector_int &ninput_items);
-      int work(int noutput_items,
-		       gr_vector_int &ninput_items,
+      size_t calculate_output_stream_length(const gr_vector_size_t &ninput_items);
+      ssize_t work(size_t noutput_items,
+		       gr_vector_size_t &ninput_items,
 		       gr_vector_const_void_star &input_items,
 		       gr_vector_void_star &output_items);
     };
@@ -130,8 +130,8 @@ namespace gr {
     {
     }
 
-    int
-    crc32_bb_impl::calculate_output_stream_length(const gr_vector_int &ninput_items)
+    size_t
+    crc32_bb_impl::calculate_output_stream_length(const gr_vector_size_t &ninput_items)
     {
       if (d_check) {
 	return ninput_items[0] - 4;
@@ -140,9 +140,9 @@ namespace gr {
       }
     }
 
-    int
-    crc32_bb_impl::work (int noutput_items,
-                       gr_vector_int &ninput_items,
+    ssize_t
+    crc32_bb_impl::work (size_t noutput_items,
+                       gr_vector_size_t &ninput_items,
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
     {

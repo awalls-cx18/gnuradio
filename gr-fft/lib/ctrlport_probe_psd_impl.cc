@@ -54,8 +54,8 @@ namespace gr {
     }
 
     void
-    ctrlport_probe_psd_impl::forecast(int noutput_items,
-                                     gr_vector_int &ninput_items_required)
+    ctrlport_probe_psd_impl::forecast(size_t noutput_items,
+                                     gr_vector_size_t &ninput_items_required)
     {
       // make sure all inputs have noutput_items available
       unsigned ninputs = ninput_items_required.size();
@@ -114,8 +114,8 @@ namespace gr {
       return (int)d_len;
     }
 
-    int
-    ctrlport_probe_psd_impl::work(int noutput_items,
+    ssize_t
+    ctrlport_probe_psd_impl::work(size_t noutput_items,
                                  gr_vector_const_void_star &input_items,
                                  gr_vector_void_star &output_items)
     {
@@ -125,10 +125,10 @@ namespace gr {
       mutex_buffer.lock();
       if(d_buffer.size() < d_len) {
         // copy smaller of remaining buffer space and num inputs to work()
-        int num_copy = std::min( (int)(d_len - d_buffer.size()), noutput_items );
+        size_t num_copy = std::min(d_len - d_buffer.size(), noutput_items );
 
         // TODO: convert this to a copy operator for speed...
-        for(int i = 0; i < num_copy; i++) {
+        for(size_t i = 0; i < num_copy; i++) {
           d_buffer.push_back(in[i]);
         }
 
@@ -139,7 +139,7 @@ namespace gr {
       }
       mutex_buffer.unlock();
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
     void

@@ -48,7 +48,7 @@ namespace gr {
 	polyphase_filterbank(interp, taps),
 	d_updated (false), d_rate(interp)
     {
-      set_history(d_taps_per_filter);
+      set_history(static_cast<size_t>(d_taps_per_filter));
     }
 
     pfb_interpolator_ccf_impl::~pfb_interpolator_ccf_impl()
@@ -61,7 +61,7 @@ namespace gr {
       gr::thread::scoped_lock guard(d_mutex);
 
       polyphase_filterbank::set_taps(taps);
-      set_history(d_taps_per_filter);
+      set_history(static_cast<size_t>(d_taps_per_filter));
       d_updated = true;
     }
 
@@ -77,8 +77,8 @@ namespace gr {
       return polyphase_filterbank::taps();
     }
 
-    int
-    pfb_interpolator_ccf_impl::work(int noutput_items,
+    ssize_t
+    pfb_size_terpolator_ccf_impl::work(int noutput_items,
 				    gr_vector_const_void_star &input_items,
 				    gr_vector_void_star &output_items)
     {
@@ -90,7 +90,7 @@ namespace gr {
 	return 0;		     // history requirements may have changed.
       }
 
-      int i = 0, count = 0;
+      size_t i = 0, count = 0;
 
       while(i < noutput_items) {
 	for(unsigned int j = 0; j < d_rate; j++) {
@@ -100,7 +100,7 @@ namespace gr {
 	count++;
       }
 
-      return i;
+      return static_cast<ssize_t>(i);
     }
 
   } /* namespace filter */

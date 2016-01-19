@@ -63,10 +63,10 @@ namespace gr {
     }
 
     void
-    flex_sync_impl::forecast(int noutput_items, gr_vector_int &inputs_required)
+    flex_sync_impl::forecast(size_t noutput_items, gr_vector_size_t &inputs_required)
     {
       // samples per bit X number of outputs needed
-      int items = noutput_items*d_spb;
+      size_t items = noutput_items*static_cast<size_t>(d_spb);
       for(unsigned int i = 0; i < inputs_required.size(); i++)
         inputs_required[i] = items;
     }
@@ -279,9 +279,9 @@ namespace gr {
       return bits;
     }
 
-    int
-    flex_sync_impl::general_work(int noutput_items,
-				 gr_vector_int &ninput_items,
+    ssize_t
+    flex_sync_impl::general_work(size_t noutput_items,
+				 gr_vector_size_t &ninput_items,
 				 gr_vector_const_void_star &input_items,
 				 gr_vector_void_star &output_items)
     {
@@ -291,8 +291,8 @@ namespace gr {
       d_phase_c = (unsigned char *)output_items[2];
       d_phase_d = (unsigned char *)output_items[3];
 
-      int i = 0, j = 0;
-      int ninputs = ninput_items[0];
+      size_t i = 0, j = 0;
+      size_t ninputs = ninput_items[0];
 
       while(i < ninputs && j < noutput_items) {
         unsigned char sym = *in++; i++;
@@ -345,7 +345,7 @@ namespace gr {
 	  // The output_symbol() routine decodes and doles out the bits
 	  // to each of the four transmitted phases of FLEX interleaved codes.
 	  if(d_index == d_center) {
-	    j += output_symbol(sym);
+	    j += static_cast<size_t>(output_symbol(sym));
 	    if(++d_count == d_baudrate*1760/1000)
 	      enter_idle();
 	  }
@@ -358,7 +358,7 @@ namespace gr {
       }
 
       consume_each(i);
-      return j;
+      return static_cast<ssize_t>(j);
     }
 
   } /* namespace pager */

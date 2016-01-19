@@ -54,15 +54,15 @@ namespace gr {
     {
     }
 
-    int
-    cpfsk_bc_impl::work(int noutput_items,
+    ssize_t
+    cpfsk_bc_impl::work(size_t noutput_items,
 			gr_vector_const_void_star &input_items,
 			gr_vector_void_star &output_items)
     {
       const char *in = (const char*)input_items[0];
       gr_complex *out = (gr_complex*)output_items[0];
 
-      for(int i = 0; i < noutput_items/d_samples_per_sym; i++) {
+      for(size_t i = 0; i < noutput_items/d_samples_per_sym; i++) {
 	for(int j = 0; j < d_samples_per_sym; j++) {
 	  if(in[i] == 1)
 	    d_phase += d_freq;
@@ -78,7 +78,7 @@ namespace gr {
 	}
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace analog */

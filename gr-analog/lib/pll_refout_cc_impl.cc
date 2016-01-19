@@ -75,8 +75,8 @@ namespace gr {
       return mod_2pi(sample_phase-ref_phase);
     }
 
-    int
-    pll_refout_cc_impl::work(int noutput_items,
+    ssize_t
+    pll_refout_cc_impl::work(size_t noutput_items,
 			     gr_vector_const_void_star &input_items,
 			     gr_vector_void_star &output_items)
     {
@@ -85,7 +85,7 @@ namespace gr {
 
       float error;
       float t_imag, t_real;
-      int size = noutput_items;
+      ssize_t size = static_cast<ssize_t>(noutput_items);
 
       while(size-- > 0) {
 	gr::sincosf(d_phase,&t_imag,&t_real);
@@ -97,7 +97,7 @@ namespace gr {
 	phase_wrap();
 	frequency_limit();
       }
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
     void

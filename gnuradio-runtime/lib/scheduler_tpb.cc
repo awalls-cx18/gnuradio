@@ -33,10 +33,10 @@ namespace gr {
   class tpb_container
   {
     block_sptr d_block;
-    int d_max_noutput_items;
+    size_t d_max_noutput_items;
 
   public:
-    tpb_container(block_sptr block, int max_noutput_items)
+    tpb_container(block_sptr block, size_t max_noutput_items)
       : d_block(block), d_max_noutput_items(max_noutput_items) {}
 
     void operator()()
@@ -46,16 +46,16 @@ namespace gr {
   };
 
   scheduler_sptr
-  scheduler_tpb::make(flat_flowgraph_sptr ffg, int max_noutput_items)
+  scheduler_tpb::make(flat_flowgraph_sptr ffg, size_t max_noutput_items)
   {
     return scheduler_sptr(new scheduler_tpb(ffg, max_noutput_items));
   }
 
   scheduler_tpb::scheduler_tpb(flat_flowgraph_sptr ffg,
-                               int max_noutput_items)
+                               size_t max_noutput_items)
     : scheduler(ffg, max_noutput_items)
   {
-    int block_max_noutput_items;
+    size_t block_max_noutput_items;
 
     // Get a topologically sorted vector of all the blocks in use.
     // Being topologically sorted probably isn't going to matter, but

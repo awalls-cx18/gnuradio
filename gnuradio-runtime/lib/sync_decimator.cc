@@ -38,34 +38,37 @@ namespace gr {
   }
 
   void
-  sync_decimator::forecast(int noutput_items, gr_vector_int &ninput_items_required)
+  sync_decimator::forecast(size_t noutput_items, gr_vector_size_t &ninput_items_required)
   {
     unsigned ninputs = ninput_items_required.size();
     for(unsigned i = 0; i < ninputs; i++)
       ninput_items_required[i] = fixed_rate_noutput_to_ninput(noutput_items);
   }
 
-  int
-  sync_decimator::fixed_rate_noutput_to_ninput(int noutput_items)
+  size_t
+  sync_decimator::fixed_rate_noutput_to_ninput(size_t noutput_items)
   {
-    return noutput_items * decimation() + history() - 1;
+    return noutput_items * static_cast<size_t>(decimation()) + history() - 1;
   }
 
-  int
-  sync_decimator::fixed_rate_ninput_to_noutput(int ninput_items)
+  size_t
+  sync_decimator::fixed_rate_ninput_to_noutput(size_t ninput_items)
   {
-    return std::max(0, ninput_items - (int)history() + 1) / decimation();
+    size_t reqd_hist_items = history() - 1;
+    if (reqd_hist_items >= ninput_items)
+      return 0;
+    return (ninput_items - reqd_hist_items) / static_cast<size_t>(decimation());
   }
 
-  int
-  sync_decimator::general_work(int noutput_items,
-                               gr_vector_int &ninput_items,
+  ssize_t
+  sync_decimator::general_work(size_t noutput_items,
+                               gr_vector_size_t &ninput_items,
                                gr_vector_const_void_star &input_items,
                                gr_vector_void_star &output_items)
   {
-    int r = work(noutput_items, input_items, output_items);
+    ssize_t r = work(noutput_items, input_items, output_items);
     if(r > 0)
-      consume_each(r * decimation ());
+      consume_each(static_cast<size_t>(r) * static_cast<size_t>(decimation ()));
     return r;
   }
 

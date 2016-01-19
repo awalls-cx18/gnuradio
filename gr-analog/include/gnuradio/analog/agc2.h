@@ -92,9 +92,9 @@ namespace gr {
 	  return output;
 	}
 
-	void scaleN(gr_complex output[], const gr_complex input[], unsigned n)
+	void scaleN(gr_complex output[], const gr_complex input[], size_t n)
 	{
-	  for(unsigned i = 0; i < n; i++)
+	  for(size_t i = 0; i < n; i++)
 	    output[i] = scale (input[i]);
 	}
 
@@ -159,9 +159,9 @@ namespace gr {
 	  return output;
 	}
 
-	void scaleN(float output[], const float input[], unsigned n)
+	void scaleN(float output[], const float input[], size_t n)
 	{
-	  for(unsigned i = 0; i < n; i++)
+	  for(size_t i = 0; i < n; i++)
 	    output[i] = scale (input[i]);
 	}
 

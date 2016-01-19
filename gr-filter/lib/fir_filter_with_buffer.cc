@@ -165,9 +165,9 @@ namespace gr {
       void
       fir_filter_with_buffer_fff::filterN(float output[],
 					  const float input[],
-					  unsigned long n)
+					  size_t n)
       {
-	for(unsigned long i = 0; i < n; i++) {
+	for(size_t i = 0; i < n; i++) {
 	  output[i] = filter(input[i]);
 	}
       }
@@ -175,13 +175,13 @@ namespace gr {
       void
       fir_filter_with_buffer_fff::filterNdec(float output[],
 					     const float input[],
-					     unsigned long n,
+					     size_t n,
 					     unsigned long decimate)
       {
-	unsigned long j = 0;
-	for(unsigned long i = 0; i < n; i++) {
+	size_t j = 0;
+	for(size_t i = 0; i < n; i++) {
 	  output[i] = filter(&input[j], decimate);
-	  j += decimate;
+	  j += static_cast<size_t>(decimate);
 	}
       }
 
@@ -318,9 +318,9 @@ namespace gr {
       void
       fir_filter_with_buffer_ccc::filterN(gr_complex output[],
 					  const gr_complex input[],
-					  unsigned long n)
+					  size_t n)
       {
-	for(unsigned long i = 0; i < n; i++) {
+	for(size_t i = 0; i < n; i++) {
 	  output[i] = filter(input[i]);
 	}
       }
@@ -328,13 +328,13 @@ namespace gr {
       void
       fir_filter_with_buffer_ccc::filterNdec(gr_complex output[],
 					     const gr_complex input[],
-					     unsigned long n,
+					     size_t n,
 					     unsigned long decimate)
       {
-	unsigned long j = 0;
-	for(unsigned long i = 0; i < n; i++) {
+	size_t j = 0;
+	for(size_t i = 0; i < n; i++) {
 	  output[i] = filter(&input[j], decimate);
-	  j += decimate;
+	  j += static_cast<size_t>(decimate);
 	}
       }
 
@@ -471,9 +471,9 @@ namespace gr {
       void
       fir_filter_with_buffer_ccf::filterN(gr_complex output[],
 					  const gr_complex input[],
-					  unsigned long n)
+					  size_t n)
       {
-	for(unsigned long i = 0; i < n; i++) {
+	for(size_t i = 0; i < n; i++) {
 	  output[i] = filter(input[i]);
 	}
       }
@@ -481,13 +481,13 @@ namespace gr {
       void
       fir_filter_with_buffer_ccf::filterNdec(gr_complex output[],
 					     const gr_complex input[],
-					     unsigned long n,
+					     size_t n,
 					     unsigned long decimate)
       {
-	unsigned long j = 0;
-	for(unsigned long i = 0; i < n; i++) {
+	size_t j = 0;
+	for(size_t i = 0; i < n; i++) {
 	  output[i] = filter(&input[j], decimate);
-	  j += decimate;
+	  j += static_cast<size_t>(decimate);
 	}
       }
 

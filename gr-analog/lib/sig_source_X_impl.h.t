@@ -47,7 +47,7 @@ namespace gr {
 		  double wave_freq, double ampl, @TYPE@ offset = 0);
       ~@IMPL_NAME@();
 
-      virtual int work(int noutput_items,
+      virtual ssize_t work(size_t noutput_items,
 		       gr_vector_const_void_star &input_items,
 		       gr_vector_void_star &output_items);
 

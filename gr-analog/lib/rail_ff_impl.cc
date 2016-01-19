@@ -72,19 +72,19 @@ namespace gr {
       d_clip = d_hi - d_mid;
     }
 
-    int
-    rail_ff_impl::work(int noutput_items,
+    ssize_t
+    rail_ff_impl::work(size_t noutput_items,
 		       gr_vector_const_void_star &input_items,
 		       gr_vector_void_star &output_items)
     {
       const float *in  = (const float*)input_items[0];
       float *out = (float*)output_items[0];
 
-      for(int i = 0; i < noutput_items; i++) {
+      for(size_t i = 0; i < noutput_items; i++) {
 	out[i] = d_mid + gr::branchless_clip(in[i] - d_mid, d_clip);
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace analog */

@@ -109,17 +109,17 @@ namespace gr {
 #endif /* GR_CTRLPORT */
     }
 
-    int
-    fading_model_impl::work (int noutput_items,
+    ssize_t
+    fading_model_impl::work (size_t noutput_items,
         gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items)
     {
         const gr_complex* in = (const gr_complex*) input_items[0];
         gr_complex* out = (gr_complex*) output_items[0];
-        for(int i=0; i<noutput_items; i++){
+        for(size_t i=0; i<noutput_items; i++){
             out[i] = in[i] * d_fader.next_sample();
         }
-        return noutput_items;
+        return static_cast<ssize_t>(noutput_items);
     }
 
 

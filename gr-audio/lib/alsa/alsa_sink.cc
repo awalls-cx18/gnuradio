@@ -210,7 +210,7 @@ namespace gr {
       if(error < 0)
         bail("get_period_size failed", error);
 
-      set_output_multiple(d_period_size);
+      set_output_multiple(static_cast<size_t>(d_period_size));
     }
 
     bool
@@ -311,8 +311,8 @@ namespace gr {
       delete [] d_buffer;
     }
 
-    int
-    alsa_sink::work(int noutput_items,
+    ssize_t
+    alsa_sink::work(size_t noutput_items,
                     gr_vector_const_void_star &input_items,
                     gr_vector_void_star &output_items)
     {
@@ -325,8 +325,8 @@ namespace gr {
     /*
      * Work function that deals with float to S16 conversion
      */
-    int
-    alsa_sink::work_s16(int noutput_items,
+    ssize_t
+    alsa_sink::work_s16(size_t noutput_items,
                         gr_vector_const_void_star &input_items,
                         gr_vector_void_star &output_items)
     {
@@ -337,7 +337,7 @@ namespace gr {
       const float **in = (const float **)&input_items[0];
       sample_t *buf = (sample_t *)d_buffer;
       int bi;
-      int n;
+      size_t n;
 
       unsigned int sizeof_frame = nchan * sizeof(sample_t);
       assert(d_buffer_size_bytes == d_period_size * sizeof_frame);
@@ -359,14 +359,14 @@ namespace gr {
           return -1; // No fixing this problem.  Say we're done.
       }
 
-      return n;
+      return static_cast<ssize_t>(n);
     }
 
     /*
      * Work function that deals with float to S32 conversion
      */
-    int
-    alsa_sink::work_s32(int noutput_items,
+    ssize_t
+    alsa_sink::work_s32(size_t noutput_items,
                         gr_vector_const_void_star &input_items,
                         gr_vector_void_star &output_items)
     {
@@ -377,7 +377,7 @@ namespace gr {
       const float **in = (const float **)&input_items[0];
       sample_t *buf = (sample_t *)d_buffer;
       int bi;
-      int n;
+      size_t n;
 
       unsigned int sizeof_frame = nchan * sizeof (sample_t);
       assert(d_buffer_size_bytes == d_period_size * sizeof_frame);
@@ -399,15 +399,15 @@ namespace gr {
           return -1; // No fixing this problem.  Say we're done.
       }
 
-      return n;
+      return static_cast<ssize_t>(n);
     }
 
     /*
      * Work function that deals with float to S16 conversion and
      * mono to stereo kludge.
      */
-    int
-    alsa_sink::work_s16_1x2(int noutput_items,
+    ssize_t
+    alsa_sink::work_s16_1x2(size_t noutput_items,
                             gr_vector_const_void_star &input_items,
                             gr_vector_void_star &output_items)
     {
@@ -419,7 +419,7 @@ namespace gr {
       const float **in = (const float **)&input_items[0];
       sample_t *buf = (sample_t *)d_buffer;
       int bi;
-      int n;
+      size_t n;
 
       unsigned int sizeof_frame = nchan * sizeof(sample_t);
       assert(d_buffer_size_bytes == d_period_size * sizeof_frame);
@@ -440,15 +440,15 @@ namespace gr {
           return -1;	// No fixing this problem.  Say we're done.
       }
 
-      return n;
+      return static_cast<ssize_t>(n);
     }
 
     /*
      * Work function that deals with float to S32 conversion and
      * mono to stereo kludge.
      */
-    int
-    alsa_sink::work_s32_1x2(int noutput_items,
+    ssize_t
+    alsa_sink::work_s32_1x2(size_t noutput_items,
                             gr_vector_const_void_star &input_items,
                             gr_vector_void_star &output_items)
     {
@@ -460,7 +460,7 @@ namespace gr {
       const float **in = (const float **)&input_items[0];
       sample_t *buf = (sample_t*)d_buffer;
       int bi;
-      int n;
+      size_t n;
 
       unsigned int sizeof_frame = nchan * sizeof(sample_t);
       assert(d_buffer_size_bytes == d_period_size * sizeof_frame);
@@ -481,7 +481,7 @@ namespace gr {
           return -1; // No fixing this problem.  Say we're done.
       }
 
-      return n;
+      return static_cast<ssize_t>(n);
     }
 
     bool

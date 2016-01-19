@@ -174,32 +174,32 @@ namespace gr {
     /*!
      * \brief Returns max buffer size (itemcount) on output port \p i.
      */
-    int max_output_buffer(size_t port=0);
+    ssize_t max_output_buffer(size_t port=0);
 
     /*!
      * \brief Sets max buffer size (itemcount) on all output ports.
      */
-    void set_max_output_buffer(int max_output_buffer);
+    void set_max_output_buffer(ssize_t max_output_buffer);
 
     /*!
      * \brief Sets max buffer size (itemcount) on output port \p port.
      */
-    void set_max_output_buffer(size_t port, int max_output_buffer);
+    void set_max_output_buffer(size_t port, ssize_t max_output_buffer);
 
     /*!
      * \brief Returns min buffer size (itemcount) on output port \p i.
      */
-    int min_output_buffer(size_t port=0);
+    ssize_t min_output_buffer(size_t port=0);
 
     /*!
      * \brief Sets min buffer size (itemcount) on all output ports.
      */
-    void set_min_output_buffer(int min_output_buffer);
+    void set_min_output_buffer(ssize_t min_output_buffer);
 
     /*!
      * \brief Sets min buffer size (itemcount) on output port \p port.
      */
-    void set_min_output_buffer(size_t port, int min_output_buffer);
+    void set_min_output_buffer(size_t port, ssize_t min_output_buffer);
 
 
     // This is a public method for ease of code organization, but should be

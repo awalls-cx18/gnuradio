@@ -63,7 +63,7 @@ namespace gr {
 
         // set up tap history
         if(ntaps < 1){ throw std::runtime_error("ntaps must be >= 1"); }
-        set_history(1+ntaps);
+        set_history(static_cast<size_t>(1+ntaps));
         d_taps.resize(ntaps, gr_complex(0,0));
     }
 
@@ -74,8 +74,8 @@ namespace gr {
         }
     }
 
-    int
-    selective_fading_model_impl::work (int noutput_items,
+    ssize_t
+    selective_fading_model_impl::work (size_t noutput_items,
         gr_vector_const_void_star &input_items,
         gr_vector_void_star &output_items)
     {
@@ -83,7 +83,7 @@ namespace gr {
         gr_complex* out = (gr_complex*) output_items[0];
 
         // loop over each output sample
-        for(int i=0; i<noutput_items; i++){
+        for(size_t i=0; i<noutput_items; i++){
 
             // clear the current values in each tap
             for(size_t j=0; j<d_taps.size(); j++){
@@ -111,7 +111,7 @@ namespace gr {
         }
 
         // return all outputs
-        return noutput_items;
+        return static_cast<ssize_t>(noutput_items);
     }
 
     void

@@ -37,7 +37,7 @@ namespace gr {
   public:
     ~top_block();
 
-    void start(int max_noutput_items=100000000) throw (std::runtime_error);
+    void start(size_t max_noutput_items=100000000) throw (std::runtime_error);
     void stop();
     //void wait();
     //void run() throw (std::runtime_error);
@@ -47,8 +47,8 @@ namespace gr {
     std::string msg_edge_list();
     void dump();
 
-    int max_noutput_items();
-    void set_max_noutput_items(int nmax);
+    size_t max_noutput_items();
+    void set_max_noutput_items(size_t nmax);
 
     gr::top_block_sptr to_top_block(); // Needed for Python type coercion
   };
@@ -65,7 +65,7 @@ void top_block_run_unlocked(gr::top_block_sptr r) throw (std::runtime_error)
     )
 }
 
-void top_block_start_unlocked(gr::top_block_sptr r, int max_noutput_items) throw (std::runtime_error)
+void top_block_start_unlocked(gr::top_block_sptr r, size_t max_noutput_items) throw (std::runtime_error)
 {
     GR_PYTHON_BLOCKING_CODE
     (

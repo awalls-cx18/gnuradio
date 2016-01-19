@@ -36,9 +36,9 @@ namespace gr {
     class FFT_API goertzel
     {
     public:
-      goertzel(int rate, int len, float freq);
+      goertzel(int rate, size_t len, float freq);
 
-      void set_params(int rate, int len, float freq);
+      void set_params(int rate, size_t len, float freq);
 
       // Process a input array
       gr_complex batch(float *in);
@@ -53,8 +53,8 @@ namespace gr {
       float d_d2;
       float d_wr;
       float d_wi;
-      int   d_len;
-      int   d_processed;
+      size_t d_len;
+      size_t d_processed;
     };
 
   } /* namespace fft */

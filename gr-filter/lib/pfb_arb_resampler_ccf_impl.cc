@@ -51,7 +51,7 @@ namespace gr {
       d_updated = false;
 
       d_resamp = new kernel::pfb_arb_resampler_ccf(rate, taps, filter_size);
-      set_history(d_resamp->taps_per_filter());
+      set_history(static_cast<size_t>(d_resamp->taps_per_filter()));
       set_relative_rate(rate);
       enable_update_rate(true);
     }
@@ -62,8 +62,8 @@ namespace gr {
     }
 
     void
-    pfb_arb_resampler_ccf_impl::forecast(int noutput_items,
-                                         gr_vector_int &ninput_items_required)
+    pfb_arb_resampler_ccf_impl::forecast(size_t noutput_items,
+                                         gr_vector_size_t &ninput_items_required)
     {
       unsigned ninputs = ninput_items_required.size();
       if(noutput_items / relative_rate() < 1) {
@@ -82,7 +82,7 @@ namespace gr {
       gr::thread::scoped_lock guard(d_mutex);
 
       d_resamp->set_taps(taps);
-      set_history(d_resamp->taps_per_filter());
+      set_history(static_cast<size_t>(d_resamp->taps_per_filter()));
       d_updated = true;
     }
 
@@ -156,9 +156,9 @@ namespace gr {
       return d_resamp->phase_offset(freq, fs);
     }
 
-    int
-    pfb_arb_resampler_ccf_impl::general_work(int noutput_items,
-					     gr_vector_int &ninput_items,
+    ssize_t
+    pfb_arb_resampler_ccf_impl::general_work(size_t noutput_items,
+					     gr_vector_size_t &ninput_items,
 					     gr_vector_const_void_star &input_items,
 					     gr_vector_void_star &output_items)
     {
@@ -172,12 +172,12 @@ namespace gr {
 	return 0;		     // history requirements may have changed.
       }
 
-      int nitems_read;
-      int nitems = floorf((float)noutput_items / relative_rate());
-      int processed = d_resamp->filter(out, in, nitems, nitems_read);
+      size_t nitems_read;
+      size_t nitems = floorf((float)noutput_items / relative_rate());
+      size_t processed = d_resamp->filter(out, in, nitems, nitems_read);
 
       consume_each(nitems_read);
-      return processed;
+      return static_cast<ssize_t>(processed);
     }
 
   } /* namespace filter */

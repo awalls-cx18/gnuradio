@@ -45,7 +45,7 @@ namespace gr {
               io_signature::make(1, 1, sizeof(gr_complex)*taps.size())),
         filterbank(taps)
     {
-      set_history(d_ntaps+1);
+      set_history(static_cast<size_t>(d_ntaps+1));
     }
 
     filterbank_vcvcf_impl::~filterbank_vcvcf_impl()
@@ -57,7 +57,7 @@ namespace gr {
     {
       gr::thread::scoped_lock guard(d_mutex);
       filterbank::set_taps(taps);
-      set_history(d_ntaps+1);
+      set_history(static_cast<size_t>(d_ntaps+1));
       d_updated = true;
     }
 
@@ -73,10 +73,10 @@ namespace gr {
       return filterbank::taps();
     }
 
-    int
+    ssize_t
     filterbank_vcvcf_impl::general_work(
-      int noutput_items,
-      gr_vector_int &ninput_items,
+      size_t noutput_items,
+      gr_vector_size_t &ninput_items,
       gr_vector_const_void_star &input_items,
       gr_vector_void_star &output_items)
     {
@@ -92,23 +92,23 @@ namespace gr {
 
       gr_complex *working;
 
-      working = new gr_complex [noutput_items + d_ntaps];
+      working = new gr_complex [noutput_items + static_cast<size_t>(d_ntaps)];
 
-      for (unsigned int i = 0; i < d_nfilts; i++) {
+      for (size_t i = 0; i < static_cast<size_t>(d_nfilts); i++) {
         // Only call the filter method on active filters.
         if (d_active[i]) {
-          for (unsigned int j = 0; j < noutput_items + d_ntaps-1; j++) {
-            unsigned int p = i + j*d_nfilts;
+          for (size_t j = 0; j < noutput_items + static_cast<size_t>(d_ntaps-1); j++) {
+            size_t p = i + j*static_cast<size_t>(d_nfilts);
             working[j] = in[p];
           }
-          for (unsigned int j = 0; j < (unsigned int)(noutput_items); j++) {
-            unsigned int p = i + j*d_nfilts;
+          for (size_t j = 0; j < noutput_items; j++) {
+            size_t p = i + j*static_cast<size_t>(d_nfilts);
             out[p] = d_fir_filters[i]->filter(working + j);
           }
         } else {
           // Otherwise just output 0s.
-          for (unsigned int j = 0; j < (unsigned int)(noutput_items); j++) {
-            unsigned int p = i + j*d_nfilts;
+          for (size_t j = 0; j < noutput_items; j++) {
+            size_t p = i + j*static_cast<size_t>(d_nfilts);
             out[p] = 0;
           }
         }
@@ -116,7 +116,7 @@ namespace gr {
 
       delete [] working;
       consume_each(noutput_items);
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace filter */

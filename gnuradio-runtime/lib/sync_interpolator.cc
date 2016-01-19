@@ -38,35 +38,38 @@ namespace gr {
   }
 
   void
-  sync_interpolator::forecast(int noutput_items,
-                              gr_vector_int &ninput_items_required)
+  sync_interpolator::forecast(size_t noutput_items,
+                              gr_vector_size_t &ninput_items_required)
   {
     unsigned ninputs = ninput_items_required.size();
     for(unsigned i = 0; i < ninputs; i++)
       ninput_items_required[i] = fixed_rate_noutput_to_ninput(noutput_items);
   }
 
-  int
-  sync_interpolator::fixed_rate_noutput_to_ninput(int noutput_items)
+  size_t
+  sync_interpolator::fixed_rate_noutput_to_ninput(size_t noutput_items)
   {
-    return noutput_items / interpolation() + history() - 1;
+    return noutput_items / static_cast<size_t>(interpolation()) + history() - 1;
   }
 
-  int
-  sync_interpolator::fixed_rate_ninput_to_noutput(int ninput_items)
+  size_t
+  sync_interpolator::fixed_rate_ninput_to_noutput(size_t ninput_items)
   {
-    return std::max(0, ninput_items - (int)history() + 1) * interpolation();
+    size_t reqd_hist_items = history() - 1;
+    if (reqd_hist_items >= ninput_items)
+      return 0;
+    return (ninput_items - reqd_hist_items) * static_cast<size_t>(interpolation());
   }
 
-  int
-  sync_interpolator::general_work(int noutput_items,
-                                  gr_vector_int &ninput_items,
+  ssize_t
+  sync_interpolator::general_work(ssize_t noutput_items,
+                                  gr_vector_size_t &ninput_items,
                                   gr_vector_const_void_star &input_items,
                                   gr_vector_void_star &output_items)
   {
-    int r = work(noutput_items, input_items, output_items);
+    ssize_t r = work(noutput_items, input_items, output_items);
     if(r > 0)
-      consume_each(r / interpolation());
+      consume_each(static_cast<size_t>(r) / static_cast<size_t>(interpolation()));
     return r;
   }
 

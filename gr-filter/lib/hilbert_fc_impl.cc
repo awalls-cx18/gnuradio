@@ -50,7 +50,7 @@ namespace gr {
     {
       d_hilb = new kernel::fir_filter_fff(1,
                          firdes::hilbert(d_ntaps, window, beta));
-      set_history(d_ntaps);
+      set_history(static_cast<size_t>(d_ntaps));
 
       const int alignment_multiple =
 	volk_get_alignment() / sizeof(float);
@@ -62,20 +62,20 @@ namespace gr {
       delete d_hilb;
     }
 
-    int
-    hilbert_fc_impl::work(int noutput_items,
+    ssize_t
+    hilbert_fc_impl::work(size_t noutput_items,
 			  gr_vector_const_void_star &input_items,
 			  gr_vector_void_star &output_items)
     {
       float *in = (float *)input_items[0];
       gr_complex *out = (gr_complex *)output_items[0];
 
-      for(int i = 0; i < noutput_items; i++) {
+      for(size_t i = 0; i < noutput_items; i++) {
 	out[i] = gr_complex(in[i + d_ntaps/2],
 			    d_hilb->filter(&in[i]));
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace filter */

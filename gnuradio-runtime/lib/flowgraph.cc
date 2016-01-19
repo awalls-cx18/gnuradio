@@ -180,8 +180,8 @@ namespace gr {
   void
   flowgraph::check_type_match(const endpoint &src, const endpoint &dst)
   {
-    int src_size = src.block()->output_signature()->sizeof_stream_item(src.port());
-    int dst_size = dst.block()->input_signature()->sizeof_stream_item(dst.port());
+    size_t src_size = src.block()->output_signature()->sizeof_stream_item(src.port());
+    size_t dst_size = dst.block()->input_signature()->sizeof_stream_item(dst.port());
 
     if(src_size != dst_size) {
       std::stringstream msg;

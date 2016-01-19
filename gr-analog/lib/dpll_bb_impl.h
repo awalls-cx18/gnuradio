@@ -47,7 +47,7 @@ namespace gr {
       float phase() const { return d_pulse_phase; }
       float decision_threshold() const { return d_decision_threshold; }
 
-      int work(int noutput_items,
+      ssize_t work(size_t noutput_items,
 	       gr_vector_const_void_star &input_items,
 	       gr_vector_void_star &output_items);
     };

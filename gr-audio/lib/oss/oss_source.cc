@@ -77,7 +77,7 @@ namespace gr {
         std::max(0.001, prefs::singleton()->get_double("audio_oss", "latency", 0.005));
 
       d_chunk_size = (int)(d_sampling_rate * CHUNK_TIME);
-      set_output_multiple(d_chunk_size);
+      set_output_multiple(static_cast<size_t>(d_chunk_size));
 
       d_buffer = new short[d_chunk_size * 2];
 
@@ -121,8 +121,8 @@ namespace gr {
       delete [] d_buffer;
     }
 
-    int
-    oss_source::work(int noutput_items,
+    ssize_t
+    oss_source::work(size_t noutput_items,
                      gr_vector_const_void_star &input_items,
                      gr_vector_void_star &output_items)
     {
@@ -135,14 +135,15 @@ namespace gr {
       // To minimize latency, never return more than CHUNK_TIME
       // worth of samples per call to work.
 
-      noutput_items = std::min(noutput_items, d_chunk_size);
+      noutput_items = std::min(noutput_items, static_cast<size_t>(d_chunk_size));
 
       int base = 0;
-      int ntogo = noutput_items;
+      size_t ntogo = noutput_items;
 
       while(ntogo > 0) {
-        int nbytes = std::min(ntogo, d_chunk_size) * bytes_per_item;
-        int result_nbytes = read(d_fd, d_buffer, nbytes);
+        size_t nbytes = std::min(ntogo, static_cast<size_t>(d_chunk_size))
+                        * static_cast<size_t>(bytes_per_item);
+        ssize_t result_nbytes = read(d_fd, d_buffer, nbytes);
 
         if(result_nbytes < 0) {
           perror("audio_oss_source");
@@ -154,19 +155,19 @@ namespace gr {
           throw std::runtime_error("internal error");
         }
 
-        int result_nitems = result_nbytes / bytes_per_item;
+        size_t result_nitems = result_nbytes / bytes_per_item;
 
         // now unpack samples into output streams
 
         switch(output_items.size()) {
         case 1:                  // mono output
-          for(int i = 0; i < result_nitems; i++) {
+          for(size_t i = 0; i < result_nitems; i++) {
             f0[base+i] = d_buffer[2*i+0] * (1.0 / 32767);
           }
           break;
 
         case 2:                 // stereo output
-          for(int i = 0; i < result_nitems; i++) {
+          for(size_t i = 0; i < result_nitems; i++) {
             f0[base+i] = d_buffer[2*i+0] * (1.0 / 32767);
             f1[base+i] = d_buffer[2*i+1] * (1.0 / 32767);
           }
@@ -180,7 +181,7 @@ namespace gr {
         base += result_nitems;
       }
 
-      return noutput_items - ntogo;
+      return static_cast<ssize_t>(noutput_items - ntogo);
     }
 
   } /* namespace audio */

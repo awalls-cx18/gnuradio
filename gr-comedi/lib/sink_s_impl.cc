@@ -139,7 +139,7 @@ namespace gr {
       if(ret < 0)
 	bail("comedi_command", comedi_errno());
 
-      set_output_multiple(d_n_chan*sizeof(sampl_t));
+      set_output_multiple(static_cast<size_t>(d_n_chan*sizeof(sampl_t)));
 
       assert(sizeof(sampl_t) == sizeof(short));
       set_output_signature(io_signature::make(1, 1, sizeof(sampl_t)));
@@ -164,14 +164,14 @@ namespace gr {
       comedi_close(d_dev);
     }
 
-    int
-    sink_s_impl::work(int noutput_items,
+    ssize_t
+    sink_s_impl::work(size_t noutput_items,
 		      gr_vector_const_void_star &input_items,
 		      gr_vector_void_star &output_items)
     {
       int ret;
 
-      int work_left = noutput_items * sizeof(sampl_t) * d_n_chan;
+      ssize_t work_left = static_cast<ssize_t>(noutput_items * sizeof(sampl_t) * d_n_chan);
       sampl_t *pbuf = (sampl_t*)d_map;
 
       do {
@@ -183,7 +183,7 @@ namespace gr {
 	  assert(ret % sizeof(sampl_t) == 0);
 	  assert(work_left % sizeof(sampl_t) == 0);
 
-	  ret = std::min(ret, work_left);
+	  ret = static_cast<int>(std::min(static_cast<ssize_t>(ret), work_left));
 	  d_buf_front += ret;
 
 	  assert(d_buffer_size%d_n_chan == 0);
@@ -194,14 +194,14 @@ namespace gr {
 
 	  if(d_buf_front==d_buf_back){
 	    usleep(1000000*std::min(work_left,
-				    d_buffer_size/2)/(d_sampling_freq*sizeof(sampl_t)*d_n_chan));
+				    static_cast<ssize_t>(d_buffer_size/2))/(d_sampling_freq*sizeof(sampl_t)*d_n_chan));
 	    continue;
 	  }
 	} while(d_buf_front==d_buf_back);
 
 	for(unsigned i = d_buf_back/sizeof(sampl_t); i < d_buf_front/sizeof(sampl_t); i++) {
 	  int chan = i%d_n_chan;
-	  int i_idx = noutput_items-work_left/d_n_chan/sizeof(sampl_t) + \
+	  size_t i_idx = noutput_items-(size_t)work_left/d_n_chan/sizeof(sampl_t) + \
 	    (i-d_buf_back/sizeof(sampl_t))/d_n_chan;
 
 	  pbuf[i%(d_buffer_size/sizeof(sampl_t))] = input_items[chan]==0 ? 0 :
@@ -218,7 +218,7 @@ namespace gr {
 	d_buf_back = d_buf_front;
       } while(work_left > 0);
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
     void

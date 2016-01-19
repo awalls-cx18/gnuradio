@@ -63,13 +63,13 @@ namespace gr {
     {
     }
 
-    int cfo_model_impl::work (int noutput_items,
+    ssize_t cfo_model_impl::work (size_t noutput_items,
             gr_vector_const_void_star &input_items,
             gr_vector_void_star &output_items){
 
         const gr_complex* in = (const gr_complex*) input_items[0];
         gr_complex* out = (gr_complex*) output_items[0];
-        for(int i=0; i<noutput_items; i++){
+        for(size_t i=0; i<noutput_items; i++){
             // update and bound cfo
             // we multiply by a random {1,-1} to remove any sign
             // bias that may exist in our random sample pool
@@ -82,7 +82,7 @@ namespace gr {
             d_angle = d_angle < -2*M_PI ? d_angle + 2*M_PI : d_angle;
             out[i] = in[i] * gr_complex(d_table.cos(d_angle), d_table.sin(d_angle));
         }
-        return noutput_items;
+        return static_cast<ssize_t>(noutput_items);
 
     }
 

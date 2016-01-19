@@ -38,7 +38,7 @@ namespace gr {
   {
   private:
     pmt::pmt_t d_length_tag_key; //!< This is the key for the tag that stores the PDU length
-    gr_vector_int d_n_input_items_reqd; //!< How many input items do I need to process the next PDU?
+    gr_vector_size_t d_n_input_items_reqd; //!< How many input items do I need to process the next PDU?
 
   protected:
     std::string d_length_tag_key_str;
@@ -65,7 +65,7 @@ namespace gr {
      * \param[out] n_input_items_reqd Number of items which will be read from every input
      */
     virtual void parse_length_tags(const std::vector<std::vector<tag_t> > &tags,
-                                   gr_vector_int &n_input_items_reqd);
+                                   gr_vector_size_t &n_input_items_reqd);
 
     /*!
      * \brief Calculate the number of output items.
@@ -77,7 +77,7 @@ namespace gr {
      * You most likely need to override this function, unless your
      * block is a sync block or integer interpolator/decimator.
      */
-    virtual int calculate_output_stream_length(const gr_vector_int &ninput_items);
+    virtual size_t calculate_output_stream_length(const gr_vector_size_t &ninput_items);
 
     /*!
      * \brief Set the new length tags on the output stream
@@ -90,12 +90,12 @@ namespace gr {
      * \param n_produced Length of the new PDU
      * \param n_ports Number of output ports
      */
-    virtual void update_length_tags(int n_produced, int n_ports);
+    virtual void update_length_tags(size_t n_produced, int n_ports);
 
   public:
     /*! \brief Don't override this.
      */
-    void /* final */ forecast (int noutput_items, gr_vector_int &ninput_items_required);
+    void /* final */ forecast (size_t noutput_items, gr_vector_size_t &ninput_items_required);
 
     bool check_topology(int ninputs, int /* noutputs */);
 
@@ -106,8 +106,8 @@ namespace gr {
      * - Calls work() with the exact number of items per PDU
      * - Updates the tags using update_length_tags()
      */
-    int general_work(int noutput_items,
-		     gr_vector_int &ninput_items,
+    ssize_t general_work(size_t noutput_items,
+		     gr_vector_size_t &ninput_items,
 		     gr_vector_const_void_star &input_items,
 		     gr_vector_void_star &output_items);
 
@@ -134,8 +134,8 @@ namespace gr {
      * \param input_items See gr::block
      * \param output_items See gr::block
      */
-    virtual int work(int noutput_items,
-                     gr_vector_int &ninput_items,
+    virtual ssize_t work(size_t noutput_items,
+                     gr_vector_size_t &ninput_items,
                      gr_vector_const_void_star &input_items,
                      gr_vector_void_star &output_items) = 0;
   };

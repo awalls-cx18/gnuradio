@@ -60,7 +60,7 @@ namespace gr {
      * allowed for any block in the flowgraph. This passes through to
      * the start function; see that function for more details.
      */
-    void run(int max_noutput_items=100000000);
+    void run(size_t max_noutput_items=100000000);
 
     /*!
      * Start the contained flowgraph. Creates one or more threads to
@@ -74,7 +74,7 @@ namespace gr {
      * maximum. Use this to adjust the maximum latency a flowgraph can
      * exhibit.
      */
-    void start(int max_noutput_items=100000000);
+    void start(size_t max_noutput_items=100000000);
 
     /*!
      * Stop the running flowgraph. Notifies each thread created by the
@@ -133,10 +133,10 @@ namespace gr {
     void dump();
 
     //! Get the number of max noutput_items in the flowgraph
-    int max_noutput_items();
+    size_t max_noutput_items();
 
     //! Set the maximum number of noutput_items in the flowgraph
-    void set_max_noutput_items(int nmax);
+    void set_max_noutput_items(size_t nmax);
 
     top_block_sptr to_top_block(); // Needed for Python type coercion
 

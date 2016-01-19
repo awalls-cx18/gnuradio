@@ -57,7 +57,7 @@ namespace gr {
   }
 
   void
-  top_block::start(int max_noutput_items)
+  top_block::start(size_t max_noutput_items)
   {
     d_impl->start(max_noutput_items);
 
@@ -79,7 +79,7 @@ namespace gr {
   }
 
   void
-  top_block::run(int max_noutput_items)
+  top_block::run(size_t max_noutput_items)
   {
     start(max_noutput_items);
     wait();
@@ -115,14 +115,14 @@ namespace gr {
     d_impl->dump();
   }
 
-  int
+  size_t
   top_block::max_noutput_items()
   {
     return d_impl->max_noutput_items();
   }
 
   void
-  top_block::set_max_noutput_items(int nmax)
+  top_block::set_max_noutput_items(size_t nmax)
   {
     d_impl->set_max_noutput_items(nmax);
   }
@@ -158,9 +158,10 @@ namespace gr {
 
     // Getters
     add_rpc_variable(
-      rpcbasic_sptr(new rpcbasic_register_get<top_block, int>(
+      rpcbasic_sptr(new rpcbasic_register_get<top_block, long>(
 	 alias(), "max noutput_items",
-	 &top_block::max_noutput_items,
+         // TODO: Really should be size_t instead of long
+	 (long (top_block::*)())&top_block::max_noutput_items,
 	 pmt::mp(0), pmt::mp(8192), pmt::mp(8192),
 	 "items", "Max number of output items",
 	 RPC_PRIVLVL_MIN, DISPNULL)));
@@ -205,9 +206,10 @@ namespace gr {
 
     // Setters
     add_rpc_variable(
-      rpcbasic_sptr(new rpcbasic_register_set<top_block, int>(
+      rpcbasic_sptr(new rpcbasic_register_set<top_block, long>(
 	 alias(), "max noutput_items",
-	 &top_block::set_max_noutput_items,
+         // TODO: Really should be size_t instead of long
+	 (void (top_block::*)(long))&top_block::set_max_noutput_items,
 	 pmt::mp(0), pmt::mp(8192), pmt::mp(8192),
 	 "items", "Max number of output items",
 	 RPC_PRIVLVL_MIN, DISPNULL)));

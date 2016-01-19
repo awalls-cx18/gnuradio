@@ -41,7 +41,7 @@ namespace gr {
       hrpt_pll_cf_impl(float alpha, float beta, float max_offset);
       ~hrpt_pll_cf_impl();
 
-      virtual int work(int noutput_items,
+      virtual ssize_t work(size_t noutput_items,
 		       gr_vector_const_void_star &input_items,
 		       gr_vector_void_star &output_items);
 

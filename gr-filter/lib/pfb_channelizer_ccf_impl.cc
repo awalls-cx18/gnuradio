@@ -93,7 +93,7 @@ namespace gr {
       d_output_multiple = 1;
       while((d_output_multiple * d_rate_ratio) % d_nfilts != 0)
 	d_output_multiple++;
-      set_output_multiple(d_output_multiple);
+      set_output_multiple(static_cast<size_t>(d_output_multiple));
 
       // Use set_taps to also set the history requirement
       set_taps(taps);
@@ -114,7 +114,7 @@ namespace gr {
       gr::thread::scoped_lock guard(d_mutex);
 
       polyphase_filterbank::set_taps(taps);
-      set_history(d_taps_per_filter+1);
+      set_history(static_cast<size_t>(d_taps_per_filter+1));
       d_updated = true;
     }
 
@@ -150,9 +150,9 @@ namespace gr {
       return d_channel_map;
     }
 
-    int
-    pfb_channelizer_ccf_impl::general_work(int noutput_items,
-					   gr_vector_int &ninput_items,
+    ssize_t
+    pfb_channelizer_ccf_impl::general_work(size_t noutput_items,
+					   gr_vector_size_t &ninput_items,
 					   gr_vector_const_void_star &input_items,
 					   gr_vector_void_star &output_items)
     {
@@ -180,8 +180,9 @@ namespace gr {
       // fred harris, Multirate Signal Processing For Communication
       // Systems. Upper Saddle River, NJ: Prentice Hall, 2004.
 
-      int n=1, i=-1, j=0, oo=0, last;
-      int toconsume = (int)rintf(noutput_items/d_oversample_rate);
+      int i=-1, j=0, last;
+      size_t n=1, oo=0;
+      size_t toconsume = (size_t)rintf(noutput_items/d_oversample_rate);
       while(n <= toconsume) {
 	j = 0;
 	i = (i + d_rate_ratio) % d_nfilts;
@@ -215,7 +216,7 @@ namespace gr {
       }
 
       consume_each(toconsume);
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace filter */

@@ -44,7 +44,7 @@ namespace gr {
       void set_sensitivity(double s) { d_sensitivity = s; }
       void set_phase(double p) { d_phase = p; }
 
-      int work(int noutput_items,
+      ssize_t work(size_t noutput_items,
 	       gr_vector_const_void_star &input_items,
 	       gr_vector_void_star &output_items);
     };

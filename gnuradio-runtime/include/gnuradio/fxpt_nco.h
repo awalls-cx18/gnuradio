@@ -88,63 +88,63 @@ namespace gr {
     }
 
     // compute cos and sin for a block of phase angles
-    void sincos(gr_complex *output, int noutput_items, double ampl=1.0)
+    void sincos(gr_complex *output, size_t noutput_items, double ampl=1.0)
     {
-      for(int i = 0; i < noutput_items; i++) {
+      for(size_t i = 0; i < noutput_items; i++) {
         output[i] = gr_complex(gr::fxpt::cos(d_phase) * ampl, gr::fxpt::sin(d_phase) * ampl);
         step();
       }
     }
 
     // compute sin for a block of phase angles
-    void sin(float *output, int noutput_items, double ampl=1.0)
+    void sin(float *output, size_t noutput_items, double ampl=1.0)
     {
-      for(int i = 0; i < noutput_items; i++) {
+      for(size_t i = 0; i < noutput_items; i++) {
         output[i] = (float)(gr::fxpt::sin(d_phase) * ampl);
         step();
       }
     }
 
     // compute cos for a block of phase angles
-    void cos(float *output, int noutput_items, double ampl=1.0)
+    void cos(float *output, size_t noutput_items, double ampl=1.0)
     {
-      for(int i = 0; i < noutput_items; i++) {
+      for(size_t i = 0; i < noutput_items; i++) {
         output[i] = (float)(gr::fxpt::cos(d_phase) * ampl);
         step ();
       }
     }
 
     // compute sin for a block of phase angles
-    void sin(short *output, int noutput_items, double ampl=1.0)
+    void sin(short *output, size_t noutput_items, double ampl=1.0)
     {
-      for(int i = 0; i < noutput_items; i++) {
+      for(size_t i = 0; i < noutput_items; i++) {
         output[i] = (short)(gr::fxpt::sin(d_phase) * ampl);
         step();
       }
     }
 
     // compute cos for a block of phase angles
-    void cos(short *output, int noutput_items, double ampl=1.0)
+    void cos(short *output, size_t noutput_items, double ampl=1.0)
     {
-      for(int i = 0; i < noutput_items; i++) {
+      for(size_t i = 0; i < noutput_items; i++) {
         output[i] = (short)(gr::fxpt::cos(d_phase) * ampl);
         step();
       }
     }
 
     // compute sin for a block of phase angles
-    void sin(int *output, int noutput_items, double ampl=1.0)
+    void sin(int *output, size_t noutput_items, double ampl=1.0)
     {
-      for(int i = 0; i < noutput_items; i++) {
+      for(size_t i = 0; i < noutput_items; i++) {
         output[i] = (int)(gr::fxpt::sin(d_phase) * ampl);
         step();
       }
     }
 
     // compute cos for a block of phase angles
-    void cos(int *output, int noutput_items, double ampl=1.0)
+    void cos(int *output, size_t noutput_items, double ampl=1.0)
     {
-      for(int i = 0; i < noutput_items; i++) {
+      for(size_t i = 0; i < noutput_items; i++) {
       output[i] = (int)(gr::fxpt::cos(d_phase) * ampl);
       step();
       }

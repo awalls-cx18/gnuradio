@@ -209,8 +209,8 @@ namespace gr {
          * \param n_read (out) Number of samples actually read from \p input.
          * \return Number of samples put into \p output.
          */
-        int filter(gr_complex *output, gr_complex *input,
-                   int n_to_read, int &n_read);
+        size_t filter(gr_complex *output, gr_complex *input,
+                      size_t n_to_read, size_t &n_read);
       };
 
 
@@ -335,8 +335,8 @@ namespace gr {
          * \param n_read (out) Number of samples actually read from \p input.
          * \return Number of samples put into \p output.
          */
-        int filter(gr_complex *output, gr_complex *input,
-                   int n_to_read, int &n_read);
+        size_t filter(gr_complex *output, gr_complex *input,
+                      size_t n_to_read, size_t &n_read);
       };
 
 
@@ -522,8 +522,8 @@ namespace gr {
          * \param n_read (out) Number of samples actually read from \p input.
          * \return Number of samples put into \p output.
          */
-        int filter(float *output, float *input,
-                   int n_to_read, int &n_read);
+        size_t filter(float *output, float *input,
+                      size_t n_to_read, size_t &n_read);
       };
 
     } /* namespace kernel */

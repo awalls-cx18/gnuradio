@@ -105,8 +105,8 @@ namespace gr {
 	return d_length - 1;
     }
 
-    int
-    dc_blocker_ff_impl::work(int noutput_items,
+    ssize_t
+    dc_blocker_ff_impl::work(size_t noutput_items,
 			     gr_vector_const_void_star &input_items,
 			     gr_vector_void_star &output_items)
     {
@@ -115,7 +115,7 @@ namespace gr {
 
       if(d_long_form) {
 	float y1, y2, y3, y4, d;
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  y1 = d_ma_0->filter(in[i]);
 	  y2 = d_ma_1->filter(y1);
 	  y3 = d_ma_2->filter(y2);
@@ -130,14 +130,14 @@ namespace gr {
       }
       else {
 	float y1, y2;
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  y1 = d_ma_0->filter(in[i]);
 	  y2 = d_ma_1->filter(y1);
 	  out[i] = d_ma_0->delayed_sig() - y2;
 	}
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace filter */

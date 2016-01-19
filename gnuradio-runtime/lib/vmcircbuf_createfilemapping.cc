@@ -62,7 +62,7 @@ namespace gr {
 #endif
 
 
-  vmcircbuf_createfilemapping::vmcircbuf_createfilemapping(int size)
+  vmcircbuf_createfilemapping::vmcircbuf_createfilemapping(size_t size)
     : gr::vmcircbuf(size)
   {
 #if !defined(HAVE_CREATEFILEMAPPING)
@@ -73,8 +73,8 @@ namespace gr {
 
     static int s_seg_counter = 0;
 
-    if(size <= 0 || (size % gr::pagesize ()) != 0) {
-      fprintf(stderr, "gr::vmcircbuf_createfilemapping: invalid size = %d\n", size);
+    if((size % static_cast<size_t>(gr::pagesize ())) != 0) {
+      fprintf(stderr, "gr::vmcircbuf_createfilemapping: invalid size = %zu\n", size);
       throw std::runtime_error ("gr::vmcircbuf_createfilemapping");
     }
 
@@ -195,7 +195,7 @@ namespace gr {
   }
 
   gr::vmcircbuf *
-  vmcircbuf_createfilemapping_factory::make(int size)
+  vmcircbuf_createfilemapping_factory::make(size_t size)
   {
     try {
       return new vmcircbuf_createfilemapping(size);

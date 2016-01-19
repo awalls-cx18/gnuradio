@@ -27,7 +27,7 @@ typedef boost::shared_ptr<gr::buffer> gr::buffer_sptr;
 %ignore gr::buffer;
 
 gr::buffer_sptr
-gr::make_buffer (int nitems, size_t sizeof_item, gr::block_sptr link);
+gr::make_buffer (size_t nitems, size_t sizeof_item, gr::block_sptr link);
 
 class gr::buffer_reader;
 typedef boost::shared_ptr<gr::buffer_reader> gr::buffer_reader_sptr;
@@ -36,7 +36,7 @@ typedef boost::shared_ptr<gr::buffer_reader> gr::buffer_reader_sptr;
 
 %rename(buffer_add_reader) gr::buffer_add_reader;
 gr::buffer_reader_sptr
-gr::buffer_add_reader (gr::buffer_sptr buf, int nzero_preload, gr::block_sptr link);
+gr::buffer_add_reader (gr::buffer_sptr buf, size_t nzero_preload, gr::block_sptr link);
 
 namespace gr {
 
@@ -46,7 +46,7 @@ namespace gr {
     ~buffer();
 
   private:
-    buffer(int nitems, size_t sizeof_item, gr::block_sptr link);
+    buffer(size_t nitems, size_t sizeof_item, gr::block_sptr link);
   };
 
   class gr::buffer_reader
@@ -56,7 +56,7 @@ namespace gr {
 
   private:
     friend class buffer;
-    buffer_reader(gr::buffer_sptr buffer, unsigned int read_index, gr::block_sptr link);
+    buffer_reader(gr::buffer_sptr buffer, size_t read_index, gr::block_sptr link);
   };
 
   %rename(buffer_ncurrently_allocated) buffer_ncurrently_allocated;

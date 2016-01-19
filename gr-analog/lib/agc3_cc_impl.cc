@@ -63,17 +63,19 @@ namespace gr {
     }
 
 
-    int
-    agc3_cc_impl::work(int noutput_items,
+    ssize_t
+    agc3_cc_impl::work(size_t noutput_items,
 		       gr_vector_const_void_star &input_items,
 		       gr_vector_void_star &output_items)
     {
       const gr_complex *in = (const gr_complex*)input_items[0];
       gr_complex *out = (gr_complex*)output_items[0];
 
+    // FIXME volk orc safe limit is MAX_INT items
 #ifdef __GNUC__
     // Compute a linear average on reset (no expected)
     if(__builtin_expect(d_reset, false)) {
+      // FIXME allocating mags[noutput_items] off the stack is bad
       float mags[noutput_items]  __attribute__ ((aligned (16)));
       volk_32fc_magnitude_32f(mags, &in[0], noutput_items);
 #else
@@ -83,7 +85,7 @@ namespace gr {
       volk_32fc_magnitude_32f(&mags[0], &in[0], noutput_items);
 #endif
         float mag(0.0);
-        for(int i=0; i<noutput_items; i++) {
+        for(size_t i=0; i<noutput_items; i++) {
             mag += mags[i];
         }
         d_gain = d_reference * (noutput_items/mag);
@@ -96,7 +98,7 @@ namespace gr {
         }
 
         // scale output values
-        for(int i=0; i<noutput_items; i++){
+        for(size_t i=0; i<noutput_items; i++){
             out[i] = in[i] * d_gain;
         }
         d_reset = false;
@@ -107,21 +109,23 @@ namespace gr {
 		std::vector<float> mag_sq(noutput_items/d_iir_update_decim);
 		std::vector<float> inv_mag(noutput_items/d_iir_update_decim);
 #else
+        // FIXME allocating mag_sq & inv_mag off the stack is bad
         float mag_sq[noutput_items/d_iir_update_decim] __attribute__ ((aligned (16)));
         float inv_mag[noutput_items/d_iir_update_decim] __attribute__ ((aligned (16)));
 #endif
 
         // generate squared magnitudes at decimated rate (gather operation)
-        for(int i=0; i<noutput_items/d_iir_update_decim; i++){
-            int idx = i*d_iir_update_decim;
+        for(size_t i=0; i<noutput_items/d_iir_update_decim; i++){
+            size_t idx = i*d_iir_update_decim;
             mag_sq[i] = in[idx].real()*in[idx].real() + in[idx].imag()*in[idx].imag();
         }
 
+        // FIXME volk orc safe limit is MAX_INT items
         // compute inverse square roots
         volk_32f_invsqrt_32f(&inv_mag[0], &mag_sq[0], noutput_items/d_iir_update_decim);
 
         // apply updates
-        for(int i=0; i<noutput_items/d_iir_update_decim; i++){
+        for(size_t i=0; i<noutput_items/d_iir_update_decim; i++){
             float magi = inv_mag[i];
 #ifdef _MSC_VER
 			if(!_finite(magi)){
@@ -133,12 +137,12 @@ namespace gr {
             } else {
                 d_gain = d_gain*(1-d_decay);
             }
-            for(int j=i*d_iir_update_decim; j<(i+1)*d_iir_update_decim; j++){
+            for(size_t j=i*d_iir_update_decim; j<(i+1)*d_iir_update_decim; j++){
                 out[j] = in[j] * d_gain;
             }
         }
       }
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace analog */

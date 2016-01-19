@@ -62,8 +62,8 @@ namespace gr {
     {
     }
 
-    int
-    @IMPL_NAME@::work(int noutput_items,
+    ssize_t
+    @IMPL_NAME@::work(size_t noutput_items,
 		      gr_vector_const_void_star &input_items,
 		      gr_vector_void_star &output_items)
     {
@@ -85,7 +85,7 @@ namespace gr {
 	if(d_offset == gr_complex(0,0))
 	  break;
 
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  optr[i] += d_offset;
 	}
 	break;
@@ -94,7 +94,7 @@ namespace gr {
 	 * The imaginary square wave leads by 90 deg.
 	 */
       case GR_SQR_WAVE:
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  if(d_nco.get_phase() < -1*M_PI/2)
 	    optr[i] = gr_complex(d_ampl, 0) + d_offset;
 	  else if(d_nco.get_phase() < 0)
@@ -112,7 +112,7 @@ namespace gr {
 	 * 90 deg.
 	 */
       case GR_TRI_WAVE:
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  if(d_nco.get_phase() < -1*M_PI/2){
 	    optr[i] = gr_complex(d_ampl*d_nco.get_phase()/M_PI + d_ampl,
 		 -1*d_ampl*d_nco.get_phase()/M_PI - d_ampl/2) + d_offset;
@@ -137,7 +137,7 @@ namespace gr {
 	 * The imaginary saw tooth wave leads by 90 deg.
 	 */
       case GR_SAW_WAVE:
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  if(d_nco.get_phase() < -1*M_PI/2) {
 	    optr[i] = gr_complex(d_ampl*d_nco.get_phase()/(2*M_PI) + d_ampl/2,
 		 d_ampl*d_nco.get_phase()/(2*M_PI) + 5*d_ampl/4) + d_offset;
@@ -162,7 +162,7 @@ namespace gr {
 	if(d_offset == 0)
 	  break;
 
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  optr[i] += d_offset;
 	}
 	break;
@@ -172,7 +172,7 @@ namespace gr {
 	if(d_offset == 0)
 	  break;
 
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  optr[i] += d_offset;
 	}
 	break;
@@ -180,7 +180,7 @@ namespace gr {
 	/* The square wave is high from -PI to 0. */
       case GR_SQR_WAVE:
 	t = (@TYPE@)d_ampl + d_offset;
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  if(d_nco.get_phase() < 0)
 	    optr[i] = t;
 	  else
@@ -191,7 +191,7 @@ namespace gr {
 
 	/* The triangle wave rises from -PI to 0 and falls from 0 to PI. */
       case GR_TRI_WAVE:
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  double t = d_ampl*d_nco.get_phase()/M_PI;
 	  if (d_nco.get_phase() < 0)
 	    optr[i] = static_cast<@TYPE@>(t + d_ampl + d_offset);
@@ -203,7 +203,7 @@ namespace gr {
 
 	/* The saw tooth wave rises from -PI to PI. */
       case GR_SAW_WAVE:
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  t = static_cast<@TYPE@>(d_ampl*d_nco.get_phase()/(2*M_PI)
 				  + d_ampl/2 + d_offset);
 	  optr[i] = t;
@@ -217,7 +217,7 @@ namespace gr {
 	throw std::runtime_error("analog::sig_source: invalid waveform");
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
     void

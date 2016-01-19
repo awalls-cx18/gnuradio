@@ -68,14 +68,14 @@ namespace gr {
     global_block_registry.unregister_primitive(symbol_name());
   }
 
-  unsigned
+  size_t
   block::history() const
   {
     return d_history;
   }
 
   void
-  block::set_history(unsigned history)
+  block::set_history(size_t history)
   {
     d_history = history;
   }
@@ -110,7 +110,7 @@ namespace gr {
   // stub implementation:  1:1
 
   void
-  block::forecast(int noutput_items, gr_vector_int &ninput_items_required)
+  block::forecast(size_t noutput_items, gr_vector_size_t &ninput_items_required)
   {
     unsigned ninputs = ninput_items_required.size ();
     for(unsigned i = 0; i < ninputs; i++)
@@ -132,7 +132,7 @@ namespace gr {
   }
 
   void
-  block::set_output_multiple(int multiple)
+  block::set_output_multiple(size_t multiple)
   {
     if(multiple < 1)
       throw std::invalid_argument("block::set_output_multiple");
@@ -142,7 +142,7 @@ namespace gr {
   }
 
   void
-  block::set_alignment(int multiple)
+  block::set_alignment(size_t multiple)
   {
     if(multiple < 1)
       throw std::invalid_argument("block::set_alignment_multiple");
@@ -151,11 +151,11 @@ namespace gr {
   }
 
   void
-  block::set_unaligned(int na)
+  block::set_unaligned(size_t na)
   {
-    // unaligned value must be less than 0 and it doesn't make sense
-    // that it's larger than the alignment value.
-    if((na < 0) || (na > d_output_multiple))
+    // unaligned value doesn't make sense
+    // if it's larger than the alignment value.
+    if(na > d_output_multiple)
       throw std::invalid_argument("block::set_unaligned");
 
     d_unaligned = na;
@@ -177,31 +177,31 @@ namespace gr {
   }
 
   void
-  block::consume(int which_input, int how_many_items)
+  block::consume(int which_input, size_t how_many_items)
   {
     d_detail->consume(which_input, how_many_items);
   }
 
   void
-  block::consume_each(int how_many_items)
+  block::consume_each(size_t how_many_items)
   {
     d_detail->consume_each(how_many_items);
   }
 
   void
-  block::produce(int which_output, int how_many_items)
+  block::produce(int which_output, size_t how_many_items)
   {
     d_detail->produce(which_output, how_many_items);
   }
 
-  int
-  block::fixed_rate_ninput_to_noutput(int ninput)
+  size_t
+  block::fixed_rate_ninput_to_noutput(size_t ninput)
   {
     throw std::runtime_error("Unimplemented");
   }
 
-  int
-  block::fixed_rate_noutput_to_ninput(int noutput)
+  size_t
+  block::fixed_rate_noutput_to_ninput(size_t noutput)
   {
     throw std::runtime_error("Unimplemented");
   }
@@ -296,16 +296,16 @@ namespace gr {
     d_tag_propagation_policy = p;
   }
 
-  int
+  size_t
   block::max_noutput_items()
   {
     return d_max_noutput_items;
   }
 
   void
-  block::set_max_noutput_items(int m)
+  block::set_max_noutput_items(size_t m)
   {
-    if(m <= 0)
+    if(m == 0)
       throw std::runtime_error("block::set_max_noutput_items: value for max_noutput_items must be greater than 0.\n");
 
     d_max_noutput_items = m;
@@ -368,15 +368,15 @@ namespace gr {
   }
 
   void
-  block::expand_minmax_buffer(int port)
+  block::expand_minmax_buffer(size_t port)
   {
-    if((size_t)port >= d_max_output_buffer.size())
+    if(port >= d_max_output_buffer.size())
       set_max_output_buffer(port, -1);
-    if((size_t)port >= d_min_output_buffer.size())
+    if(port >= d_min_output_buffer.size())
       set_min_output_buffer(port, -1);
   }
 
-  long
+  ssize_t
   block::max_output_buffer(size_t i)
   {
     if(i >= d_max_output_buffer.size())
@@ -385,23 +385,23 @@ namespace gr {
   }
 
   void
-  block::set_max_output_buffer(long max_output_buffer)
+  block::set_max_output_buffer(ssize_t max_output_buffer)
   {
     for(int i = 0; i < output_signature()->max_streams(); i++) {
-      set_max_output_buffer(i, max_output_buffer);
+      set_max_output_buffer((size_t)i, max_output_buffer);
     }
   }
 
   void
-  block::set_max_output_buffer(int port, long max_output_buffer)
+  block::set_max_output_buffer(size_t port, ssize_t max_output_buffer)
   {
-    if((size_t)port >= d_max_output_buffer.size())
+    if(port >= d_max_output_buffer.size())
       d_max_output_buffer.push_back(max_output_buffer);
     else
       d_max_output_buffer[port] = max_output_buffer;
   }
 
-  long
+  ssize_t
   block::min_output_buffer(size_t i)
   {
     if(i >= d_min_output_buffer.size())
@@ -410,18 +410,18 @@ namespace gr {
   }
 
   void
-  block::set_min_output_buffer(long min_output_buffer)
+  block::set_min_output_buffer(ssize_t min_output_buffer)
   {
     std::cout << "set_min_output_buffer on block " << unique_id() << " to " << min_output_buffer << std::endl;
     for(int i=0; i<output_signature()->max_streams(); i++) {
-      set_min_output_buffer(i, min_output_buffer);
+      set_min_output_buffer((size_t)i, min_output_buffer);
     }
   }
 
   void
-  block::set_min_output_buffer(int port, long min_output_buffer)
+  block::set_min_output_buffer(size_t port, ssize_t min_output_buffer)
   {
-    if((size_t)port >= d_min_output_buffer.size())
+    if(port >= d_min_output_buffer.size())
       d_min_output_buffer.push_back(min_output_buffer);
     else
       d_min_output_buffer[port] = min_output_buffer;
@@ -897,9 +897,9 @@ namespace gr {
     return os;
   }
 
-  int
-  block::general_work(int noutput_items,
-                      gr_vector_int &ninput_items,
+  ssize_t
+  block::general_work(size_t noutput_items,
+                      gr_vector_size_t &ninput_items,
                       gr_vector_const_void_star &input_items,
                       gr_vector_void_star &output_items)
   {

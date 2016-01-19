@@ -132,7 +132,7 @@ namespace gr {
 	 * \brief compute an array of N output values.
 	 * \p input must have N valid entries.
 	 */
-	void filter_n(o_type output[], const i_type input[], long n);
+	void filter_n(o_type output[], const i_type input[], size_t n);
 
 	/*!
 	 * \return number of taps in filter.
@@ -228,9 +228,9 @@ namespace gr {
       void
       iir_filter<i_type, o_type, tap_type, acc_type>::filter_n(o_type output[],
 						     const i_type input[],
-						     long n)
+						     size_t n)
       {
-	for(int i = 0; i < n; i++)
+	for(size_t i = 0; i < n; i++)
 	  output[i] = filter(input[i]);
       }
 

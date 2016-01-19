@@ -115,7 +115,7 @@ namespace gr {
 	d_firs[n]->set_taps (xtaps[n]);
       }
 
-      set_history(nt);
+      set_history(static_cast<size_t>(nt));
       d_updated = false;
     }
 
@@ -125,8 +125,8 @@ namespace gr {
       return d_new_taps;
     }
 
-    int
-    @NAME@::work(int noutput_items,
+    ssize_t
+    @NAME@::work(size_t noutput_items,
 		 gr_vector_const_void_star &input_items,
 		 gr_vector_void_star &output_items)
     {
@@ -139,16 +139,16 @@ namespace gr {
       }
 
       int nfilters = interpolation();
-      int ni = noutput_items / interpolation();
+      size_t ni = noutput_items / interpolation();
 
-      for(int i = 0; i < ni; i++) {
+      for(size_t i = 0; i < ni; i++) {
 	for(int nf = 0; nf < nfilters; nf++) {
 	  out[nf] = d_firs[nf]->filter(&in[i]);
 	}
 	out += nfilters;
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace filter */

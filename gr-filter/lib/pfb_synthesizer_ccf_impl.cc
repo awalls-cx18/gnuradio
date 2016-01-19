@@ -71,7 +71,7 @@ namespace gr {
       d_fft = new fft::fft_complex(d_twox*d_numchans, false);
       memset(d_fft->get_inbuf(), 0, d_twox*d_numchans*sizeof(gr_complex));
 
-      set_output_multiple(d_numchans);
+      set_output_multiple(static_cast<size_t>(d_numchans));
     }
 
     pfb_synthesizer_ccf_impl::~pfb_synthesizer_ccf_impl()
@@ -238,8 +238,8 @@ namespace gr {
       return d_channel_map;
     }
 
-    int
-    pfb_synthesizer_ccf_impl::work(int noutput_items,
+    ssize_t
+    pfb_synthesizer_ccf_impl::work(size_t noutput_items,
                                    gr_vector_const_void_star &input_items,
                                    gr_vector_void_star &output_items)
     {
@@ -253,7 +253,8 @@ namespace gr {
         return 0;		     // history requirements may have changed.
       }
 
-      unsigned int n, i;
+      size_t n;
+      unsigned int i;
       size_t ninputs = input_items.size();
 
       // Algorithm for critically sampled channels
@@ -299,7 +300,7 @@ namespace gr {
         }
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace filter */

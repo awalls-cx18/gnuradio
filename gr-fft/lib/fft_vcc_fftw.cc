@@ -82,18 +82,18 @@ namespace gr {
     return false;
     }
 
-    int
-    fft_vcc_fftw::work(int noutput_items,
+    ssize_t
+    fft_vcc_fftw::work(size_t noutput_items,
                gr_vector_const_void_star &input_items,
                gr_vector_void_star &output_items)
     {
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
 
-      unsigned int input_data_size = input_signature()->sizeof_stream_item (0);
-      unsigned int output_data_size = output_signature()->sizeof_stream_item (0);
+      size_t input_data_size = input_signature()->sizeof_stream_item (0);
+      size_t output_data_size = output_signature()->sizeof_stream_item (0);
 
-      int count = 0;
+      size_t count = 0;
 
       while(count++ < noutput_items) {
 
@@ -139,7 +139,7 @@ namespace gr {
       out += d_fft_size;
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace fft */

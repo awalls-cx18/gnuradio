@@ -87,14 +87,14 @@ namespace gr {
       }
     }
 
-    int
-    hrpt_decoder_impl::work(int noutput_items,
+    ssize_t
+    hrpt_decoder_impl::work(size_t noutput_items,
 			    gr_vector_const_void_star &input_items,
 			    gr_vector_void_star &output_items)
     {
       const unsigned short *in = (const unsigned short*)input_items[0];
 
-      int i = 0;
+      size_t i = 0;
       while(i < noutput_items) {
 	d_current_word = in[i++] & 0x3FF;
 	d_word_num++;
@@ -135,7 +135,7 @@ namespace gr {
 	}
       }
 
-      return i;
+      return static_cast<ssize_t>(i);
     }
 
     void

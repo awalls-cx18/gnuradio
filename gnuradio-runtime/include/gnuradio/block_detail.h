@@ -74,25 +74,25 @@ namespace gr {
      * \brief Tell the scheduler \p how_many_items of input stream \p
      * which_input were consumed.
      */
-    void consume(int which_input, int how_many_items);
+    void consume(int which_input, size_t how_many_items);
 
     /*!
      * \brief Tell the scheduler \p how_many_items were consumed on
      * each input stream.
      */
-    void consume_each(int how_many_items);
+    void consume_each(size_t how_many_items);
 
     /*!
      * \brief Tell the scheduler \p how_many_items were produced on
      * output stream \p which_output.
      */
-    void produce(int which_output, int how_many_items);
+    void produce(int which_output, size_t how_many_items);
 
     /*!
      * \brief Tell the scheduler \p how_many_items were produced on
      * each output stream.
      */
-    void produce_each(int how_many_items);
+    void produce_each(size_t how_many_items);
 
     // Return the number of items read on input stream which_input
     uint64_t nitems_read(unsigned int which_input);
@@ -200,7 +200,7 @@ namespace gr {
     gr::thread::gr_thread_t thread;    // portable thread handle
 
     void start_perf_counters();
-    void stop_perf_counters(int noutput_items, int nproduced);
+    void stop_perf_counters(size_t noutput_items, size_t nproduced);
     void reset_perf_counters();
 
     // Calls to get performance counter items
@@ -232,7 +232,7 @@ namespace gr {
     float pc_work_time_total();
 
     tpb_detail d_tpb;	// used by thread-per-block scheduler
-    int d_produce_or;
+    size_t d_produce_or;
 
     // ----------------------------------------------------------------------------
 

@@ -44,12 +44,12 @@ namespace gr {
   };
 
   scheduler_sptr
-  scheduler_sts::make(flat_flowgraph_sptr ffg, int max_noutput_items)
+  scheduler_sts::make(flat_flowgraph_sptr ffg, size_t max_noutput_items)
   {
     return scheduler_sptr(new scheduler_sts(ffg, max_noutput_items));
   }
 
-  scheduler_sts::scheduler_sts(flat_flowgraph_sptr ffg, int max_noutput_items)
+  scheduler_sts::scheduler_sts(flat_flowgraph_sptr ffg, size_t max_noutput_items)
     : scheduler(ffg, max_noutput_items)
   {
     // Split the flattened flow graph into discrete partitions, each

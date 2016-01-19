@@ -83,14 +83,14 @@ namespace gr {
     case GR_BLOCK_GW_WORK_INTERP:
       _decim = 1;
       _interp = factor;
-      this->set_output_multiple(_interp);
+      this->set_output_multiple(static_cast<size_t>(_interp));
       break;
     }
   }
 
   void
-  block_gateway_impl::forecast(int noutput_items,
-                               gr_vector_int &ninput_items_required)
+  block_gateway_impl::forecast(size_t noutput_items,
+                               gr_vector_size_t &ninput_items_required)
   {
     switch(_work_type) {
     case GR_BLOCK_GW_WORK_GENERAL:
@@ -109,9 +109,9 @@ namespace gr {
     }
   }
 
-  int
-  block_gateway_impl::general_work(int noutput_items,
-                                   gr_vector_int &ninput_items,
+  ssize_t
+  block_gateway_impl::general_work(size_t noutput_items,
+                                   gr_vector_size_t &ninput_items,
                                    gr_vector_const_void_star &input_items,
                                    gr_vector_void_star &output_items)
   {
@@ -126,15 +126,15 @@ namespace gr {
       return _message.general_work_args_return_value;
 
     default:
-      int r = work (noutput_items, input_items, output_items);
+      ssize_t r = work (noutput_items, input_items, output_items);
       if(r > 0)
-        consume_each(r*_decim/_interp);
+        consume_each(static_cast<size_t>(r)*static_cast<size_t>(_decim/_interp));
       return r;
     }
   }
 
-  int
-  block_gateway_impl::work(int noutput_items,
+  ssize_t
+  block_gateway_impl::work(size_t noutput_items,
                            gr_vector_const_void_star &input_items,
                            gr_vector_void_star &output_items)
   {
@@ -149,16 +149,19 @@ namespace gr {
     return _message.work_args_return_value;
   }
 
-  int
-  block_gateway_impl::fixed_rate_noutput_to_ninput(int noutput_items)
+  size_t
+  block_gateway_impl::fixed_rate_noutput_to_ninput(size_t noutput_items)
   {
-    return (noutput_items*_decim/_interp) + history() - 1;
+    return (noutput_items*static_cast<size_t>(_decim/_interp)) + history() - 1;
   }
 
-  int
-  block_gateway_impl::fixed_rate_ninput_to_noutput(int ninput_items)
+  size_t
+  block_gateway_impl::fixed_rate_ninput_to_noutput(size_t ninput_items)
   {
-    return std::max(0, ninput_items - (int)history() + 1)*_interp/_decim;
+    size_t reqd_hist_items = history() - 1;
+    if (reqd_hist_items >= ninput_items)
+      return 0;
+    return (ninput_items - reqd_hist_items) * static_cast<size_t>(_interp/_decim);
   }
 
   bool

@@ -40,7 +40,7 @@ namespace gr {
       // gr::fft::goertzel_fc::sptr
       typedef boost::shared_ptr<goertzel_fc> sptr;
 
-      static sptr make(int rate, int len, float freq);
+      static sptr make(int rate, size_t len, float freq);
 
       virtual void set_freq (float freq) = 0;
 

@@ -76,8 +76,8 @@ namespace gr {
 #endif
     }
 
-    int
-    @IMPL_NAME@::work(int noutput_items,
+    ssize_t
+    @IMPL_NAME@::work(size_t noutput_items,
 		      gr_vector_const_void_star &input_items,
 		      gr_vector_void_star &output_items)
     {
@@ -89,14 +89,14 @@ namespace gr {
 #if @IS_COMPLEX@	// complex?
 
       case GR_UNIFORM:
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  out[i] = gr_complex(d_ampl * ((d_rng.ran1() * 2.0) - 1.0),
 			      d_ampl * ((d_rng.ran1() * 2.0) - 1.0));
 	}
 	break;
 
       case GR_GAUSSIAN:
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  out[i] = d_ampl * d_rng.rayleigh_complex();
 	}
 	break;
@@ -104,25 +104,25 @@ namespace gr {
 #else			// nope...
 
       case GR_UNIFORM:
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  out[i] = (@TYPE@)(d_ampl * ((d_rng.ran1() * 2.0) - 1.0));
 	}
 	break;
 
       case GR_GAUSSIAN:
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  out[i] = (@TYPE@)(d_ampl * d_rng.gasdev());
 	}
 	break;
 
       case GR_LAPLACIAN:
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  out[i] = (@TYPE@)(d_ampl * d_rng.laplacian());
 	}
 	break;
 
       case GR_IMPULSE:	// FIXME changeable impulse settings
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  out[i] = (@TYPE@)(d_ampl * d_rng.impulse(9));
 	}
 	break;
@@ -132,7 +132,7 @@ namespace gr {
 	throw std::runtime_error("invalid type");
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace analog */

@@ -34,7 +34,6 @@ namespace gr {
     /*CONSUME_ALL_AVAILABLE_LIMIT_MIN=5,*/
     CONSUME_ZERO=6,
     CONSUME_ONE=7,
-    CONSUME_MINUS_ONE=8
   } consume_type_t;
 
   typedef enum {

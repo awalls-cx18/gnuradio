@@ -143,7 +143,7 @@ namespace gr {
 
       d_jack_buffer_size = jack_get_buffer_size(d_jack_client);
 
-      set_output_multiple(d_jack_buffer_size);
+      set_output_multiple(static_cast<size_t>(d_jack_buffer_size));
 
       assert(sizeof(float)==sizeof(sample_t));
       set_output_signature(io_signature::make(1, MAX_PORTS, sizeof(sample_t)));
@@ -193,8 +193,8 @@ namespace gr {
         jack_ringbuffer_free(d_ringbuffer[i]);
     }
 
-    int
-    jack_source::work(int noutput_items,
+    ssize_t
+    jack_source::work(size_t noutput_items,
                       gr_vector_const_void_star &input_items,
                       gr_vector_void_star &output_items)
     {
@@ -202,7 +202,7 @@ namespace gr {
       const float **out = (const float **)&output_items[0];
 
       // Minimize latency
-      noutput_items = std::min (noutput_items, (int)d_jack_buffer_size);
+      noutput_items = std::min (noutput_items, (size_t)d_jack_buffer_size);
 
       for(int i = 0; i < d_portcount; i++) {
 
@@ -211,7 +211,7 @@ namespace gr {
         // read_size and work_size are in bytes
         unsigned int read_size;
 
-        int work_size = noutput_items*sizeof(sample_t);
+        size_t work_size = noutput_items*sizeof(sample_t);
 
         while(work_size > 0) {
           unsigned int read_space;    // bytes
@@ -234,7 +234,8 @@ namespace gr {
 #endif
 
           read_space -= read_space%(d_jack_buffer_size*sizeof(sample_t));
-          read_size = std::min(read_space, (unsigned int)work_size);
+          read_size = static_cast<unsigned int>(
+                        std::min(static_cast<size_t>(read_space), work_size));
 
           if(jack_ringbuffer_read(d_ringbuffer[i], (char *) &(out[i][k]),
                                   read_size) < read_size) {
@@ -245,7 +246,7 @@ namespace gr {
         }
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
     void

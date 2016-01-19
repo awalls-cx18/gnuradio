@@ -97,11 +97,11 @@ namespace gr {
       bool start(void);
       bool stop(void);
 
-      int work(int noutput_items,
+      ssize_t work(size_t noutput_items,
                gr_vector_const_void_star &input_items,
                gr_vector_void_star &output_items);
 
-      inline void tag_work(int &ninput_items);
+      inline void tag_work(size_t &ninput_items);
 
       void setup_rpc();
 

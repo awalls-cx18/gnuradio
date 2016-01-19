@@ -42,16 +42,16 @@ namespace gr {
       gr_complex  *d_rotator;
       gr::thread::mutex d_mutex; // mutex to protect set/work access
 
-      inline int work_fir_exp(int noutput_items,
+      inline ssize_t work_fir_exp(size_t noutput_items,
                               gr_vector_const_void_star &input_items,
                               gr_vector_void_star &output_items);
-      inline int work_fir_fft(int noutput_items,
+      inline ssize_t work_fir_fft(size_t noutput_items,
                               gr_vector_const_void_star &input_items,
                               gr_vector_void_star &output_items);
-      inline int work_fft_exp(int noutput_items,
+      inline ssize_t work_fft_exp(size_t noutput_items,
                               gr_vector_const_void_star &input_items,
                               gr_vector_void_star &output_items);
-      inline int work_fft_fft(int noutput_items,
+      inline ssize_t work_fft_fft(size_t noutput_items,
                               gr_vector_const_void_star &input_items,
                               gr_vector_void_star &output_items);
 
@@ -70,7 +70,7 @@ namespace gr {
       std::vector<std::vector<float> > taps() const;
       void set_channel(const unsigned int channel);
 
-      int work(int noutput_items,
+      ssize_t work(size_t noutput_items,
 	       gr_vector_const_void_star &input_items,
 	       gr_vector_void_star &output_items);
     };

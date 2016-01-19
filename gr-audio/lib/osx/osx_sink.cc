@@ -740,8 +740,8 @@ namespace gr {
       return(true);
     }
 
-    int
-    osx_sink::work(int noutput_items,
+    ssize_t
+    osx_sink::work(size_t noutput_items,
                    gr_vector_const_void_star &input_items,
                    gr_vector_void_star &output_items)
     {
@@ -830,13 +830,13 @@ namespace gr {
 
       // find the maximum amount of buffer space available right now
 
-      UInt32 l_max_count;
-      int diff_count = ((int)d_buffer_size_samples) - noutput_items;
+      size_t l_max_count;
+      ssize_t diff_count = ((ssize_t)d_buffer_size_samples) - (ssize_t)noutput_items;
       if(diff_count < 0) {
         l_max_count = 0;
       }
       else {
-        l_max_count = (UInt32)diff_count;
+        l_max_count = (size_t)diff_count;
       }
 
 #if _OSX_AU_DEBUG_RENDER_
@@ -937,7 +937,7 @@ namespace gr {
                 << d_buffer_size_samples << std::endl;
 #endif
 
-      return (noutput_items);
+      return static_cast<ssize_t>(noutput_items);
     }
 
     OSStatus

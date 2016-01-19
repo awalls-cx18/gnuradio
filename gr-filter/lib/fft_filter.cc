@@ -144,14 +144,14 @@ namespace gr {
 	return d_nthreads;
       }
 
-      int
-      fft_filter_fff::filter(int nitems, const float *input, float *output)
+      size_t
+      fft_filter_fff::filter(size_t nitems, const float *input, float *output)
       {
 	int dec_ctr = 0;
 	int j = 0;
-	int ninput_items = nitems * d_decimation;
+	size_t ninput_items = nitems * static_cast<size_t>(d_decimation);
 
-	for (int i = 0; i < ninput_items; i += d_nsamples){
+	for (size_t i = 0; i < ninput_items; i += static_cast<size_t>(d_nsamples)){
 
 	  memcpy(d_fwdfft->get_inbuf(), &input[i], d_nsamples * sizeof(float));
 
@@ -301,14 +301,14 @@ namespace gr {
 	return d_nthreads;
       }
 
-      int
-      fft_filter_ccc::filter(int nitems, const gr_complex *input, gr_complex *output)
+      size_t
+      fft_filter_ccc::filter(size_t nitems, const gr_complex *input, gr_complex *output)
       {
 	int dec_ctr = 0;
 	int j = 0;
-	int ninput_items = nitems * d_decimation;
+	size_t ninput_items = nitems * static_cast<size_t>(d_decimation);
 
-	for(int i = 0; i < ninput_items; i += d_nsamples) {
+	for (size_t i = 0; i < ninput_items; i += static_cast<size_t>(d_nsamples)){
 	  memcpy(d_fwdfft->get_inbuf(), &input[i], d_nsamples * sizeof(gr_complex));
 
 	  for(j = d_nsamples; j < d_fftsize; j++)
@@ -464,14 +464,15 @@ namespace gr {
 	return d_nthreads;
       }
 
-      int
-      fft_filter_ccf::filter(int nitems, const gr_complex *input, gr_complex *output)
+      size_t
+      fft_filter_ccf::filter(size_t nitems, const gr_complex *input, gr_complex *output)
       {
 	int dec_ctr = 0;
 	int j = 0;
-	int ninput_items = nitems * d_decimation;
+	size_t ninput_items = nitems * static_cast<size_t>(d_decimation);
 
-	for(int i = 0; i < ninput_items; i += d_nsamples) {
+	for (size_t i = 0; i < ninput_items; i += static_cast<size_t>(d_nsamples)){
+
 	  memcpy(d_fwdfft->get_inbuf(), &input[i], d_nsamples * sizeof(gr_complex));
 
 	  for(j = d_nsamples; j < d_fftsize; j++)

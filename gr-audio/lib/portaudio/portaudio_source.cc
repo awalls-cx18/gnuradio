@@ -74,7 +74,7 @@ namespace gr {
       }
 
       // FYI, the buffer indicies are in units of samples.
-      d_writer = gr::make_buffer(N_BUFFERS * bufsize_samples, sizeof(sample_t));
+      d_writer = gr::make_buffer(static_cast<size_t>(N_BUFFERS * bufsize_samples), sizeof(sample_t));
       d_reader = gr::buffer_add_reader(d_writer, 0);
     }
 
@@ -94,9 +94,9 @@ namespace gr {
                               void *arg)
     {
       portaudio_source *self = (portaudio_source *)arg;
-      int nchan = self->d_input_parameters.channelCount;
-      int nframes_to_copy = framesPerBuffer;
-      int nframes_room = self->d_writer->space_available() / nchan;
+      size_t nchan = static_cast<size_t>(self->d_input_parameters.channelCount);
+      size_t nframes_to_copy = static_cast<size_t>(framesPerBuffer);
+      size_t nframes_room = self->d_writer->space_available() / nchan;
 
       if(nframes_to_copy <= nframes_room) {  // We've got room for the data ..
         //if (LOGGING)
@@ -290,20 +290,20 @@ namespace gr {
       Pa_Terminate();
     }
 
-    int
-    portaudio_source::work(int noutput_items,
+    ssize_t
+    portaudio_source::work(size_t noutput_items,
                            gr_vector_const_void_star &input_items,
                            gr_vector_void_star &output_items)
     {
       float **out = (float **)&output_items[0];
-      const unsigned nchan = d_input_parameters.channelCount; // # of channels == samples/frame
+      const size_t nchan = static_cast<size_t>(d_input_parameters.channelCount); // # of channels == samples/frame
 
-      int k;
+      size_t k;
       for(k = 0; k < noutput_items;) {
-        int nframes = d_reader->items_available() / nchan;	// # of frames in ringbuffer
+        size_t nframes = d_reader->items_available() / nchan;	// # of frames in ringbuffer
         if(nframes == 0) {     // no data right now...
           if(k > 0)            // If we've produced anything so far, return that
-            return k;
+            return static_cast<ssize_t>(k);
 
           if(d_ok_to_block) {
             gr::thread::scoped_lock guard(d_ringbuffer_mutex);
@@ -327,16 +327,16 @@ namespace gr {
           {
             gr::thread::scoped_lock guard(d_ringbuffer_mutex);
 
-            int nf = std::min(noutput_items - k, (int)d_portaudio_buffer_size_frames);
-            for(int i = 0; i < nf; i++) {
-              for(unsigned int c = 0; c < nchan; c++) {
+            size_t nf = std::min(noutput_items - k, (size_t)d_portaudio_buffer_size_frames);
+            for(size_t i = 0; i < nf; i++) {
+              for(size_t c = 0; c < nchan; c++) {
                 out[c][k + i] = 0;
               }
             }
             k += nf;
 
             d_ringbuffer_ready = false;
-            return k;
+            return static_cast<ssize_t>(k);
           }
         }
 
@@ -344,11 +344,11 @@ namespace gr {
         {
           gr::thread::scoped_lock guard(d_ringbuffer_mutex);
 
-          int nf = std::min(noutput_items - k, nframes);
+          size_t nf = std::min(noutput_items - k, nframes);
 
           const float *p = (const float*)d_reader->read_pointer();
-          for(int i = 0; i < nf; i++) {
-            for(unsigned int c = 0; c < nchan; c++) {
+          for(size_t i = 0; i < nf; i++) {
+            for(size_t c = 0; c < nchan; c++) {
               out[c][k + i] = *p++;
             }
           }
@@ -358,7 +358,7 @@ namespace gr {
         }
       }
 
-      return k;  // tell how many we actually did
+      return static_cast<ssize_t>(k);  // tell how many we actually did
     }
 
     void

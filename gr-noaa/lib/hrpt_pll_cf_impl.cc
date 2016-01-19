@@ -65,15 +65,15 @@ namespace gr {
     {
     }
 
-    int
-    hrpt_pll_cf_impl::work(int noutput_items,
+    ssize_t
+    hrpt_pll_cf_impl::work(size_t noutput_items,
 			   gr_vector_const_void_star &input_items,
 			   gr_vector_void_star &output_items)
     {
       const gr_complex *in = (const gr_complex *)input_items[0];
       float *out = (float *)output_items[0];
 
-      for(int i = 0; i < noutput_items; i++) {
+      for(size_t i = 0; i < noutput_items; i++) {
 
 	// Generate and mix out carrier
 	float re, im;
@@ -86,7 +86,7 @@ namespace gr {
 	d_phase = phase_wrap(d_phase + error*d_alpha + d_freq);
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace noaa */

@@ -46,7 +46,7 @@ namespace gr {
       fading_model_impl(unsigned int N, float fDTs, bool LOS, float K, int seed);
       ~fading_model_impl();
       void setup_rpc();
-      int work (int noutput_items,
+      ssize_t work (size_t noutput_items,
             gr_vector_const_void_star &input_items,
             gr_vector_void_star &output_items);
 

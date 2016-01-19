@@ -127,7 +127,7 @@ namespace gr {
   // ------------------------------------------------------------------------
 
   static void
-  init_buffer(vmcircbuf *c, int counter, int size)
+  init_buffer(vmcircbuf *c, int counter, size_t size)
   {
     unsigned int *p = (unsigned int*)c->pointer_to_first_copy();
     for(unsigned int i = 0; i < size / sizeof(int); i++)
@@ -135,7 +135,7 @@ namespace gr {
   }
 
   static bool
-  check_mapping(vmcircbuf *c, int counter, int size, const char *msg, bool verbose)
+  check_mapping(vmcircbuf *c, int counter, size_t size, const char *msg, bool verbose)
   {
     bool ok = true;
 
@@ -169,28 +169,28 @@ namespace gr {
   }
 
   static const char *
-  memsize(int size)
+  memsize(size_t size)
   {
     static std::string buf;
     if(size >= (1 << 20)) {
-      buf = str(boost::format("%dMB") % (size / (1 << 20)));
+      buf = str(boost::format("%zuMB") % (size / (1 << 20)));
     }
     else if(size >= (1 << 10)){
-      buf = str(boost::format("%dKB") % (size / (1 << 10)));
+      buf = str(boost::format("%zuKB") % (size / (1 << 10)));
     }
     else {
-      buf = str(boost::format("%d") % size);
+      buf = str(boost::format("%zu") % size);
     }
     return buf.c_str();
   }
 
   static bool
-  test_a_bunch(vmcircbuf_factory *factory, int n, int size, int *start_ptr, bool verbose)
+  test_a_bunch(vmcircbuf_factory *factory, int n, size_t size, int *start_ptr, bool verbose)
   {
     bool ok = true;
     std::vector<int> counter(n);
     std::vector<vmcircbuf*> c(n);
-    int cum_size = 0;
+    size_t cum_size = 0;
 
     for(int i = 0; i < n; i++) {
       counter[i] = *start_ptr;
@@ -198,7 +198,7 @@ namespace gr {
       if((c[i] = factory->make (size)) == 0) {
         if(verbose)
           fprintf(stderr,
-                  "Failed to allocate gr::vmcircbuf number %d of size %d (cum = %s)\n",
+                  "Failed to allocate gr::vmcircbuf number %d of size %zu (cum = %s)\n",
                   i + 1, size, memsize(cum_size));
         return false;
       }
@@ -226,7 +226,7 @@ namespace gr {
       fprintf(stderr, "Testing %s...\n", f->name());
 
     bool v = verbose >= 2;
-    int granularity = f->granularity();
+    size_t granularity = static_cast<size_t>(f->granularity());
     int start = 0;
     bool ok = true;
 

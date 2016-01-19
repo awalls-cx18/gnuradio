@@ -79,20 +79,20 @@ namespace gr {
       return decision;
     }
 
-    int
-    slicer_fb_impl::work(int noutput_items,
+    ssize_t
+    slicer_fb_impl::work(size_t noutput_items,
 			 gr_vector_const_void_star &input_items,
 			 gr_vector_void_star &output_items)
     {
       float *iptr = (float *)input_items[0];
       unsigned char *optr = (unsigned char *)output_items[0];
 
-      int size = noutput_items;
+      size_t size = noutput_items;
 
-      for(int i = 0; i < size; i++)
+      for(size_t i = 0; i < size; i++)
         *optr++ = slice(*iptr++);
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace pager */

@@ -45,7 +45,7 @@ namespace gr {
    * \param sizeof_item is the size of an item in bytes.
    * \param link is the block that writes to this buffer.
    */
-  GR_RUNTIME_API buffer_sptr make_buffer(int nitems, size_t sizeof_item,
+  GR_RUNTIME_API buffer_sptr make_buffer(size_t nitems, size_t sizeof_item,
                                          block_sptr link=block_sptr());
 
   /*!
@@ -60,12 +60,12 @@ namespace gr {
     /*!
      * \brief return number of items worth of space available for writing
      */
-    int space_available();
+    size_t space_available();
 
     /*!
      * \brief return size of this buffer in items
      */
-    int bufsize() const { return d_bufsize; }
+    size_t bufsize() const { return d_bufsize; }
 
     /*!
      * \brief return the base address of the buffer
@@ -83,7 +83,7 @@ namespace gr {
     /*!
      * \brief tell buffer that we wrote \p nitems into it
      */
-    void update_write_pointer(int nitems);
+    void update_write_pointer(size_t nitems);
 
     void set_done(bool done);
     bool done() const { return d_done; }
@@ -139,13 +139,13 @@ namespace gr {
 
   private:
     friend class buffer_reader;
-    friend GR_RUNTIME_API buffer_sptr make_buffer(int nitems, size_t sizeof_item, block_sptr link);
+    friend GR_RUNTIME_API buffer_sptr make_buffer(size_t nitems, size_t sizeof_item, block_sptr link);
     friend GR_RUNTIME_API buffer_reader_sptr buffer_add_reader
-      (buffer_sptr buf, int nzero_preload, block_sptr link, int delay);
+      (buffer_sptr buf, size_t nzero_preload, block_sptr link, int delay);
 
   protected:
     char			       *d_base;		// base address of buffer
-    unsigned int			d_bufsize;	// in items
+    size_t				d_bufsize;	// in items
 
     // Keep track of maximum sample delay of any reader; Only prune tags past this.
     unsigned d_max_reader_delay;
@@ -161,15 +161,17 @@ namespace gr {
     // and the d_read_index's and d_abs_read_offset's in the buffer readers.
     //
     gr::thread::mutex			d_mutex;
-    unsigned int			d_write_index;	// in items [0,d_bufsize)
+    size_t      			d_write_index;	// in items [0,d_bufsize)
     uint64_t                            d_abs_write_offset; // num items written since the start
     bool				d_done;
     std::multimap<uint64_t,tag_t>                   d_item_tags;
     uint64_t                            d_last_min_items_read;
 
-    unsigned index_add(unsigned a, unsigned b)
+    size_t index_add(size_t a, size_t b)
     {
-      unsigned s = a + b;
+      size_t s = a + b;
+
+      assert(s >= a && s >= b); // No overflow of size_t
 
       if(s >= d_bufsize)
         s -= d_bufsize;
@@ -178,18 +180,23 @@ namespace gr {
       return s;
     }
 
-    unsigned index_sub(unsigned a, unsigned b)
+    size_t index_sub(size_t a, size_t b)
     {
-      int s = a - b;
+      size_t s, aorig;
 
-      if(s < 0)
-        s += d_bufsize;
+      aorig = a;
+      if(a < b)
+        a += d_bufsize;
 
-      assert((unsigned) s < d_bufsize);
+      assert(a >= b && aorig <= a); // No subtraction underflow and no size_t overflow
+
+      s = a - b;
+
+      assert(s < d_bufsize);
       return s;
     }
 
-    virtual bool allocate_buffer(int nitems, size_t sizeof_item);
+    virtual bool allocate_buffer(size_t nitems, size_t sizeof_item);
 
     /*!
      * \brief constructor is private.  Use gr_make_buffer to create instances.
@@ -204,7 +211,7 @@ namespace gr {
      * dependent boundary.  This is typically the system page size, but
      * under MS windows is 64KB.
      */
-    buffer(int nitems, size_t sizeof_item, block_sptr link);
+    buffer(size_t nitems, size_t sizeof_item, block_sptr link);
 
     /*!
      * \brief disassociate \p reader from this buffer
@@ -220,7 +227,7 @@ namespace gr {
    * \param delay Optional setting to declare the buffer's sample delay.
    */
   GR_RUNTIME_API buffer_reader_sptr
-    buffer_add_reader(buffer_sptr buf, int nzero_preload, block_sptr link=block_sptr(), int delay=0);
+    buffer_add_reader(buffer_sptr buf, size_t nzero_preload, block_sptr link=block_sptr(), int delay=0);
 
   //! returns # of buffers currently allocated
   GR_RUNTIME_API long buffer_ncurrently_allocated();
@@ -256,7 +263,7 @@ namespace gr {
     /*!
      * \brief Return number of items available for reading.
      */
-    int items_available() const;
+    size_t items_available() const;
 
     /*!
      * \brief Return buffer this reader reads from.
@@ -267,7 +274,7 @@ namespace gr {
      * \brief Return maximum number of items that could ever be available for reading.
      * This is used as a sanity check in the scheduler to avoid looping forever.
      */
-    int max_possible_items_available() const { return d_buffer->d_bufsize - 1; }
+    size_t max_possible_items_available() const { return d_buffer->d_bufsize - 1; }
 
     /*!
      * \brief return pointer to read buffer.
@@ -279,7 +286,7 @@ namespace gr {
     /*
      * \brief tell buffer we read \p items from it
      */
-    void update_read_pointer(int nitems);
+    void update_read_pointer(size_t nitems);
 
     void set_done(bool done) { d_buffer->set_done(done); }
     bool done() const { return d_buffer->done(); }
@@ -319,16 +326,16 @@ namespace gr {
   private:
     friend class buffer;
     friend GR_RUNTIME_API buffer_reader_sptr
-      buffer_add_reader(buffer_sptr buf, int nzero_preload, block_sptr link, int delay);
+      buffer_add_reader(buffer_sptr buf, size_t nzero_preload, block_sptr link, int delay);
 
     buffer_sptr  d_buffer;
-    unsigned int d_read_index;       // in items [0,d->buffer.d_bufsize)
+    size_t       d_read_index;       // in items [0,d->buffer.d_bufsize)
     uint64_t     d_abs_read_offset;  // num items seen since the start
     boost::weak_ptr<block> d_link;   // block that reads via this buffer reader
     unsigned d_attr_delay;           // sample delay attribute for tag propagation
 
     //! constructor is private.  Use gr::buffer::add_reader to create instances
-    buffer_reader(buffer_sptr buffer, unsigned int read_index,
+    buffer_reader(buffer_sptr buffer, size_t read_index,
                   block_sptr link);
   };
 

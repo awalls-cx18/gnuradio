@@ -56,17 +56,17 @@ namespace gr {
     }
 
     // gr::sync_interpolator overrides these to assist work
-    void forecast(int noutput_items,
-                  gr_vector_int &ninput_items_required);
-    int  general_work(int noutput_items,
-                      gr_vector_int &ninput_items,
+    void forecast(size_t noutput_items,
+                  gr_vector_size_t &ninput_items_required);
+    ssize_t general_work(size_t noutput_items,
+                      gr_vector_size_t &ninput_items,
                       gr_vector_const_void_star &input_items,
                       gr_vector_void_star &output_items);
 
     // derived classes should override work
 
-    int fixed_rate_ninput_to_noutput(int ninput);
-    int fixed_rate_noutput_to_ninput(int noutput);
+    size_t fixed_rate_ninput_to_noutput(size_t ninput);
+    size_t fixed_rate_noutput_to_ninput(size_t noutput);
   };
 
 } /* namespace gr */

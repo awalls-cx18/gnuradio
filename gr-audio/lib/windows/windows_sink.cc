@@ -76,7 +76,7 @@ namespace gr {
       }
 
       d_chunk_size = (int)(d_sampling_freq * CHUNK_TIME);
-      set_output_multiple(d_chunk_size);
+      set_output_multiple(static_cast<size_t>(d_chunk_size));
 
       d_buffer = new short[d_chunk_size * 2];
     }
@@ -89,8 +89,8 @@ namespace gr {
       delete [] d_buffer;
     }
 
-    int
-    windows_sink::work(int noutput_items,
+    ssize_t
+    windows_sink::work(size_t noutput_items,
                        gr_vector_const_void_star & input_items,
                        gr_vector_void_star & output_items)
     {
@@ -100,7 +100,7 @@ namespace gr {
         // dummy
         f0 = (const float*)input_items[0];
 
-        for(int i = 0; i < noutput_items; i += d_chunk_size) {
+        for(size_t i = 0; i < noutput_items; i += (size_t)d_chunk_size) {
 	  for(int j = 0; j < d_chunk_size; j++) {
             d_buffer[2*j + 0] = (short)(sin(2.0 * 3.1415926535897932384626 *
                                             (float)j * 1000.0 / (float)d_sampling_freq) *
@@ -121,7 +121,7 @@ namespace gr {
         case 1:         // mono input
           f0 = (const float*)input_items[0];
 
-	  for(int i = 0; i < noutput_items; i += d_chunk_size) {
+	  for(size_t i = 0; i < noutput_items; i += (size_t)d_chunk_size) {
             for(int j = 0; j < d_chunk_size; j++) {
               d_buffer[2*j + 0] = (short)(f0[j] * 32767);
               d_buffer[2*j + 1] = (short)(f0[j] * 32767);
@@ -139,7 +139,7 @@ namespace gr {
 	  f0 = (const float*)input_items[0];
 	  f1 = (const float*)input_items[1];
 
-	  for(int i = 0; i < noutput_items; i += d_chunk_size)  {
+	  for(size_t i = 0; i < noutput_items; i += (size_t)d_chunk_size)  {
             for(int j = 0; j < d_chunk_size; j++) {
               d_buffer[2*j + 0] = (short)(f0[j] * 32767);
               d_buffer[2*j + 1] = (short)(f1[j] * 32767);
@@ -155,7 +155,7 @@ namespace gr {
 	  break;
 	}
       }
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
     int

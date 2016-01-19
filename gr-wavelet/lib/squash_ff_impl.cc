@@ -51,9 +51,9 @@ namespace gr {
       d_igrid = (double *) malloc(d_inum * sizeof(double));
       d_iwork = (double *) malloc(d_inum * sizeof(double));
       d_ogrid = (double *) malloc(d_onum * sizeof(double));
-      for (unsigned int i = 0; i < d_inum; i++)
+      for (size_t i = 0; i < d_inum; i++)
 	d_igrid[i] = igrid[i];
-      for (unsigned int i = 0; i < d_onum; i++)
+      for (size_t i = 0; i < d_onum; i++)
 	d_ogrid[i] = ogrid[i];
 
       d_accel = gsl_interp_accel_alloc();
@@ -69,29 +69,29 @@ namespace gr {
       gsl_spline_free(d_spline);
     }
 
-    int
-    squash_ff_impl::work(int noutput_items,
+    ssize_t
+    squash_ff_impl::work(size_t noutput_items,
 			 gr_vector_const_void_star &input_items,
 			 gr_vector_void_star &output_items)
     {
       const float *in  = (const float *) input_items[0];
       float       *out = (float *) output_items[0];
 
-      for (int count = 0; count < noutput_items; count++) {
+      for (size_t count = 0; count < noutput_items; count++) {
 
-	for (unsigned int i = 0; i < d_inum; i++)
+	for (size_t i = 0; i < d_inum; i++)
 	  d_iwork[i] = in[i];
 
 	gsl_spline_init(d_spline, d_igrid, d_iwork, d_inum);
 
-	for (unsigned int i = 0; i < d_onum; i++)
+	for (size_t i = 0; i < d_onum; i++)
 	  out[i] = gsl_spline_eval(d_spline, d_ogrid[i], d_accel);
 
 	in  += d_inum;
 	out += d_onum;
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace wavelet */

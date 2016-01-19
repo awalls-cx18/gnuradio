@@ -82,8 +82,8 @@ namespace gr {
      * ensure that our input contains the appropriate "history" for the
      * filter. History should be equal to the number of filter taps.
      */
-    unsigned history() const;
-    void  set_history(unsigned history);
+    size_t history() const;
+    void  set_history(size_t history);
 
     /*!
      * Declares the block's delay in samples. Since the delay of
@@ -143,8 +143,8 @@ namespace gr {
      * number of data items required on each input stream.  The
      * estimate doesn't have to be exact, but should be close.
      */
-    virtual void forecast(int noutput_items,
-                          gr_vector_int &ninput_items_required);
+    virtual void forecast(size_t noutput_items,
+                          gr_vector_size_t &ninput_items_required);
 
     /*!
      * \brief compute output items from input items
@@ -160,8 +160,8 @@ namespace gr {
      * general_work must call consume or consume_each to indicate how
      * many items were consumed on each input stream.
      */
-    virtual int general_work(int noutput_items,
-                             gr_vector_int &ninput_items,
+    virtual ssize_t general_work(size_t noutput_items,
+                             gr_vector_size_t &ninput_items,
                              gr_vector_const_void_star &input_items,
                              gr_vector_void_star &output_items);
 
@@ -190,8 +190,8 @@ namespace gr {
      * be an integer multiple of \param multiple The default value of
      * output multiple is 1.
      */
-    void set_output_multiple(int multiple);
-    int  output_multiple() const { return d_output_multiple; }
+    void set_output_multiple(size_t multiple);
+    size_t output_multiple() const { return d_output_multiple; }
     bool output_multiple_set() const { return d_output_multiple_set; }
 
     /*!
@@ -211,11 +211,11 @@ namespace gr {
      * d_unaligned==0. The buffers are now aligned again and the
      * aligned calls can be performed again.
      */
-    void set_alignment(int multiple);
-    int  alignment() const { return d_output_multiple; }
+    void set_alignment(size_t multiple);
+    size_t alignment() const { return d_output_multiple; }
 
-    void set_unaligned(int na);
-    int  unaligned() const { return d_unaligned; }
+    void set_unaligned(size_t na);
+    size_t unaligned() const { return d_unaligned; }
     void set_is_unaligned(bool u);
     bool is_unaligned() const { return d_is_unaligned; }
 
@@ -224,13 +224,13 @@ namespace gr {
      * which_input were consumed.
      * This function should be called at the end of work() or general_work(), after all processing is finished.
      */
-    void consume(int which_input, int how_many_items);
+    void consume(int which_input, size_t how_many_items);
 
     /*!
      * \brief Tell the scheduler \p how_many_items were consumed on
      * each input stream.
      */
-    void consume_each(int how_many_items);
+    void consume_each(size_t how_many_items);
 
     /*!
      * \brief Tell the scheduler \p how_many_items were produced on
@@ -239,7 +239,7 @@ namespace gr {
      * If the block's general_work method calls produce, \p
      * general_work must return WORK_CALLED_PRODUCE.
      */
-    void produce(int which_output, int how_many_items);
+    void produce(int which_output, size_t how_many_items);
 
     /*!
      * \brief Set the approximate output rate / input rate
@@ -269,14 +269,14 @@ namespace gr {
      * N.B. this is only defined if fixed_rate returns true.
      * Generally speaking, you don't need to override this.
      */
-    virtual int fixed_rate_ninput_to_noutput(int ninput);
+    virtual size_t fixed_rate_ninput_to_noutput(size_t ninput);
 
     /*!
      * \brief Given noutput samples, return number of input samples required to produce noutput.
      * N.B. this is only defined if fixed_rate returns true.
      * Generally speaking, you don't need to override this.
      */
-    virtual int fixed_rate_noutput_to_ninput(int noutput);
+    virtual size_t fixed_rate_noutput_to_ninput(size_t noutput);
 
     /*!
      * \brief Return the number of items read on input stream which_input
@@ -305,7 +305,7 @@ namespace gr {
      * Should be 0 for most blocks.  Useful if we're dealing with
      * packets and the block produces one packet per call to work.
      */
-    int min_noutput_items() const { return d_min_noutput_items; }
+    size_t min_noutput_items() const { return d_min_noutput_items; }
 
     /*!
      * \brief Set the minimum number of output items this block can
@@ -313,13 +313,13 @@ namespace gr {
      *
      * \param m the minimum noutput_items this block can produce.
      */
-    void set_min_noutput_items(int m) { d_min_noutput_items = m; }
+    void set_min_noutput_items(size_t m) { d_min_noutput_items = m; }
 
     /*!
      * \brief Return the maximum number of output items this block will
      * handle during a call to work.
      */
-    int max_noutput_items();
+    size_t max_noutput_items();
 
     /*!
      * \brief Set the maximum number of output items this block will
@@ -327,7 +327,7 @@ namespace gr {
      *
      * \param m the maximum noutput_items this block will handle.
      */
-    void set_max_noutput_items(int m);
+    void set_max_noutput_items(size_t m);
 
     /*!
      * \brief Clear the switch for using the max_noutput_items value of this block.
@@ -355,16 +355,15 @@ namespace gr {
     /*
      * Used to expand the vectors that hold the min/max buffer sizes.
      *
-     * Specifically, when -1 is used, the vectors are just initialized
-     * with 1 value; this is used by the flat_flowgraph to expand when
+     * This is used by the flat_flowgraph to expand when
      * required to add a new value for new ports on these blocks.
      */
-    void expand_minmax_buffer(int port);
+    void expand_minmax_buffer(size_t port);
 
     /*!
      * \brief Returns max buffer size on output port \p i.
      */
-    long max_output_buffer(size_t i);
+    ssize_t max_output_buffer(size_t i);
 
     /*!
      * \brief Request limit on max buffer size on all output ports.
@@ -382,7 +381,7 @@ namespace gr {
      *
      * \param max_output_buffer the requested maximum output size in items.
      */
-    void set_max_output_buffer(long max_output_buffer);
+    void set_max_output_buffer(ssize_t max_output_buffer);
 
     /*!
      * \brief Request limit on max buffer size on output port \p port.
@@ -401,12 +400,12 @@ namespace gr {
      * \param port the output port the request applies to.
      * \param max_output_buffer the requested maximum output size in items.
      */
-    void set_max_output_buffer(int port, long max_output_buffer);
+    void set_max_output_buffer(size_t port, ssize_t max_output_buffer);
 
     /*!
      * \brief Returns min buffer size on output port \p i.
      */
-    long min_output_buffer(size_t i);
+    ssize_t min_output_buffer(size_t i);
 
     /*!
      * \brief Request limit on the mininum buffer size on all output
@@ -425,7 +424,7 @@ namespace gr {
      *
      * \param min_output_buffer the requested minimum output size in items.
      */
-    void set_min_output_buffer(long min_output_buffer);
+    void set_min_output_buffer(ssize_t min_output_buffer);
 
     /*!
      * \brief Request limit on min buffer size on output port \p port.
@@ -444,7 +443,7 @@ namespace gr {
      * \param port the output port the request applies to.
      * \param min_output_buffer the requested minimum output size in items.
      */
-    void set_min_output_buffer(int port, long min_output_buffer);
+    void set_min_output_buffer(size_t port, ssize_t min_output_buffer);
 
     // --------------- Performance counter functions -------------
 
@@ -637,18 +636,18 @@ namespace gr {
     bool finished();
 
   private:
-    int                   d_output_multiple;
+    size_t                d_output_multiple;
     bool                  d_output_multiple_set;
-    int                   d_unaligned;
+    size_t                d_unaligned;
     bool                  d_is_unaligned;
     double                d_relative_rate;	// approx output_rate / input_rate
     block_detail_sptr     d_detail;		// implementation details
-    unsigned              d_history;
+    size_t                d_history;
     unsigned              d_attr_delay;         // the block's sample delay
     bool                  d_fixed_rate;
     bool                  d_max_noutput_items_set;     // if d_max_noutput_items is valid
-    int                   d_max_noutput_items;         // value of max_noutput_items for this block
-    int                   d_min_noutput_items;
+    size_t                d_max_noutput_items;         // value of max_noutput_items for this block
+    size_t                d_min_noutput_items;
     tag_propagation_policy_t d_tag_propagation_policy; // policy for moving tags downstream
     std::vector<int>      d_affinity;              // thread affinity proc. mask
     int                   d_priority;              // thread priority level
@@ -815,8 +814,8 @@ namespace gr {
 
     void enable_update_rate(bool en);
 
-    std::vector<long> d_max_output_buffer;
-    std::vector<long> d_min_output_buffer;
+    std::vector<ssize_t> d_max_output_buffer;
+    std::vector<ssize_t> d_min_output_buffer;
 
     /*! Used by block's setters and work functions to make
      * setting/resetting of parameters thread-safe.

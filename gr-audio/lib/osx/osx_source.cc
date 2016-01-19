@@ -1045,8 +1045,8 @@ namespace gr {
       return(true);
     }
 
-    int
-    osx_source::work(int noutput_items,
+    ssize_t
+    osx_source::work(size_t noutput_items,
                      gr_vector_const_void_star &input_items,
                      gr_vector_void_star &output_items)
     {
@@ -1134,7 +1134,7 @@ namespace gr {
       // true), return (0) is no data is available and "ok_to_block"
       // is false, or process the actual amount of available data.
 
-      UInt32 actual_noutput_items = noutput_items;
+      size_t actual_noutput_items = noutput_items;
 
       if(d_queue_sample_count < actual_noutput_items) {
         if(d_queue_sample_count == 0) {
@@ -1180,7 +1180,7 @@ namespace gr {
         }
 
         // use the actual amount of available data
-        actual_noutput_items = d_queue_sample_count;
+        actual_noutput_items = static_cast<size_t>(d_queue_sample_count);
       }
 
 #if _OSX_AU_DEBUG_RENDER_
@@ -1228,7 +1228,7 @@ namespace gr {
 	std::cerr << "audio_osx_source::work: returning." << std::endl;
 #endif
 
-      return (actual_noutput_items);
+      return static_cast<ssize_t>(actual_noutput_items);
     }
 
     OSStatus

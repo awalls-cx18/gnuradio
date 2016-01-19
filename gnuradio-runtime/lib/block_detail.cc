@@ -108,7 +108,7 @@ namespace gr {
   }
 
   void
-  block_detail::consume(int which_input, int how_many_items)
+  block_detail::consume(int which_input, size_t how_many_items)
   {
     if(how_many_items > 0) {
       input(which_input)->update_read_pointer(how_many_items);
@@ -116,7 +116,7 @@ namespace gr {
   }
 
   void
-  block_detail::consume_each(int how_many_items)
+  block_detail::consume_each(size_t how_many_items)
   {
     if(how_many_items > 0) {
       for(int i = 0; i < ninputs (); i++) {
@@ -126,7 +126,7 @@ namespace gr {
   }
 
   void
-  block_detail::produce(int which_output, int how_many_items)
+  block_detail::produce(int which_output, size_t how_many_items)
   {
     if(how_many_items > 0) {
       d_output[which_output]->update_write_pointer(how_many_items);
@@ -135,7 +135,7 @@ namespace gr {
   }
 
   void
-  block_detail::produce_each(int how_many_items)
+  block_detail::produce_each(size_t how_many_items)
   {
     if(how_many_items > 0) {
       for(int i = 0; i < noutputs (); i++) {
@@ -266,7 +266,7 @@ namespace gr {
   }
 
   void
-  block_detail::stop_perf_counters(int noutput_items, int nproduced)
+  block_detail::stop_perf_counters(size_t noutput_items, size_t nproduced)
   {
     d_end_of_work = gr::high_res_timer_now_perfmon();
     gr::high_res_timer_type diff = d_end_of_work - d_start_of_work;

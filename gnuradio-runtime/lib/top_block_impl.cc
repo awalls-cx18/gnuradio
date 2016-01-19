@@ -42,7 +42,7 @@ namespace gr {
 #define GR_TOP_BLOCK_IMPL_DEBUG 0
 
   typedef scheduler_sptr(*scheduler_maker)(flat_flowgraph_sptr ffg,
-                                           int max_noutput_items);
+                                           size_t max_noutput_items);
 
   static struct scheduler_table {
     const char *name;
@@ -53,7 +53,7 @@ namespace gr {
   };
 
   static scheduler_sptr
-  make_scheduler(flat_flowgraph_sptr ffg, int max_noutput_items)
+  make_scheduler(flat_flowgraph_sptr ffg, size_t max_noutput_items)
   {
     static scheduler_maker factory = 0;
 
@@ -93,7 +93,7 @@ namespace gr {
   }
 
   void
-  top_block_impl::start(int max_noutput_items)
+  top_block_impl::start(size_t max_noutput_items)
   {
     gr::thread::scoped_lock l(d_mutex);
 
@@ -225,14 +225,14 @@ namespace gr {
       d_ffg->dump();
   }
 
-  int
+  size_t
   top_block_impl::max_noutput_items()
   {
     return d_max_noutput_items;
   }
 
   void
-  top_block_impl::set_max_noutput_items(int nmax)
+  top_block_impl::set_max_noutput_items(size_t nmax)
   {
     d_max_noutput_items = nmax;
   }

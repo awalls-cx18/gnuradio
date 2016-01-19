@@ -54,15 +54,15 @@ namespace gr {
 
     // input vector assumed to be output from gsl wavelet computation
 
-    int
-    wvps_ff_impl::work(int noutput_items,
+    ssize_t
+    wvps_ff_impl::work(size_t noutput_items,
 		       gr_vector_const_void_star &input_items,
 		       gr_vector_void_star &output_items)
     {
       const float *in  = (const float *) input_items[0];
       float       *out = (float *) output_items[0];
 
-      for (int count = 0; count < noutput_items; count++) {
+      for (size_t count = 0; count < noutput_items; count++) {
 
 	// any power?
 
@@ -96,7 +96,7 @@ namespace gr {
 	out += d_olen;
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace wavelet */

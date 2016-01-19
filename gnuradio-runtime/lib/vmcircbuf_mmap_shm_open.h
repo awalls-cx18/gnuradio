@@ -35,7 +35,7 @@ namespace gr {
   class GR_RUNTIME_API vmcircbuf_mmap_shm_open : public gr::vmcircbuf
   {
   public:
-    vmcircbuf_mmap_shm_open(int size);
+    vmcircbuf_mmap_shm_open(size_t size);
     virtual ~vmcircbuf_mmap_shm_open();
   };
 
@@ -62,7 +62,7 @@ namespace gr {
      *
      * Call this to create a doubly mapped circular buffer.
      */
-    virtual gr::vmcircbuf *make(int size);
+    virtual gr::vmcircbuf *make(size_t size);
   };
 
 } /* namespace gr */

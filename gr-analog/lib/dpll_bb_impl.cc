@@ -60,15 +60,15 @@ namespace gr {
     {
     }
 
-    int
-    dpll_bb_impl::work(int noutput_items,
+    ssize_t
+    dpll_bb_impl::work(size_t noutput_items,
 		       gr_vector_const_void_star &input_items,
 		       gr_vector_void_star &output_items)
     {
       const char *iptr = (const char*)input_items[0];
       char *optr = (char*)output_items[0];
 
-      for(int i = 0; i < noutput_items; i++) {
+      for(size_t i = 0; i < noutput_items; i++) {
 	optr[i]= 0;
 	if(iptr[i] == 1) {
 	  if(d_restart == 0) {
@@ -91,7 +91,7 @@ namespace gr {
 	}
 	d_pulse_phase += d_pulse_frequency;
       }
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace analog */

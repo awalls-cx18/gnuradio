@@ -33,12 +33,12 @@ namespace gr {
     {
     private:
       goertzel d_goertzel;
-      int      d_len;
+      size_t   d_len;
       float    d_freq;
       int      d_rate;
 
     public:
-      goertzel_fc_impl(int rate, int len, float freq);
+      goertzel_fc_impl(int rate, size_t len, float freq);
 
       ~goertzel_fc_impl();
 
@@ -48,7 +48,7 @@ namespace gr {
       float freq() { return d_freq; }
       int   rate() { return d_rate; }
 
-      int work(int noutput_items,
+      ssize_t work(size_t noutput_items,
 	       gr_vector_const_void_star &input_items,
 	       gr_vector_void_star &output_items);
     };

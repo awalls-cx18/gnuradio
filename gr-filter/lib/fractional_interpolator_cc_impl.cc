@@ -62,41 +62,41 @@ namespace gr {
     }
 
     void
-    fractional_interpolator_cc_impl::forecast(int noutput_items,
-				     gr_vector_int &ninput_items_required)
+    fractional_interpolator_cc_impl::forecast(size_t noutput_items,
+				     gr_vector_size_t &ninput_items_required)
     {
       unsigned ninputs = ninput_items_required.size();
       for(unsigned i=0; i < ninputs; i++) {
 	ninput_items_required[i] =
-	  (int)ceil((noutput_items * d_mu_inc) + d_interp->ntaps());
+	  (size_t)ceil((noutput_items * d_mu_inc) + d_interp->ntaps());
       }
     }
 
-    int
-    fractional_interpolator_cc_impl::general_work(int noutput_items,
-				     gr_vector_int &ninput_items,
+    ssize_t
+    fractional_interpolator_cc_impl::general_work(size_t noutput_items,
+				     gr_vector_size_t &ninput_items,
 				     gr_vector_const_void_star &input_items,
 				     gr_vector_void_star &output_items)
     {
       const gr_complex *in = (const gr_complex*)input_items[0];
       gr_complex *out = (gr_complex*)output_items[0];
 
-      int ii = 0; // input index
-      int oo = 0; // output index
+      size_t ii = 0; // input index
+      size_t oo = 0; // output index
 
       while(oo < noutput_items) {
 	out[oo++] = d_interp->interpolate(&in[ii], d_mu);
 
 	double s = d_mu + d_mu_inc;
 	double f = floor(s);
-	int incr = (int)f;
+	size_t incr = (size_t)f;
 	d_mu = s - f;
 	ii += incr;
       }
 
       consume_each(ii);
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
     float

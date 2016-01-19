@@ -495,8 +495,8 @@ namespace gr {
 #endif
     }
 
-    int
-    usrp_source_impl::work(int noutput_items,
+    ssize_t
+    usrp_source_impl::work(size_t noutput_items,
                            gr_vector_const_void_star &input_items,
                            gr_vector_void_star &output_items)
     {
@@ -558,10 +558,10 @@ namespace gr {
       default:
         //GR_LOG_WARN(d_logger, boost::format("USRP Source Block caught rx error: %d") % _metadata.strerror());
         GR_LOG_WARN(d_logger, boost::format("USRP Source Block caught rx error code: %d") % _metadata.error_code);
-        return num_samps;
+        return static_cast<ssize_t>(num_samps);
       }
 
-      return num_samps;
+      return static_cast<ssize_t>(num_samps);
     }
 
     void

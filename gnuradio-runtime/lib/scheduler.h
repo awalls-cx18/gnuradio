@@ -48,7 +48,7 @@ namespace gr {
      * The scheduler will continue running until all blocks until they
      * report that they are done or the stop method is called.
      */
-    scheduler(flat_flowgraph_sptr ffg, int max_noutput_items);
+    scheduler(flat_flowgraph_sptr ffg, size_t max_noutput_items);
 
     virtual ~scheduler();
 

@@ -42,7 +42,7 @@
 
 namespace gr {
 
-  vmcircbuf_mmap_shm_open::vmcircbuf_mmap_shm_open(int size)
+  vmcircbuf_mmap_shm_open::vmcircbuf_mmap_shm_open(size_t size)
     : gr::vmcircbuf(size)
   {
 #if !defined(HAVE_MMAP) || !defined(HAVE_SHM_OPEN)
@@ -53,8 +53,8 @@ namespace gr {
 
     static int s_seg_counter = 0;
 
-    if(size <= 0 || (size % gr::pagesize ()) != 0) {
-      fprintf(stderr, "gr::vmcircbuf_mmap_shm_open: invalid size = %d\n", size);
+    if((size % static_cast<size_t>(gr::pagesize ())) != 0) {
+      fprintf(stderr, "gr::vmcircbuf_mmap_shm_open: invalid size = %zu\n", size);
       throw std::runtime_error("gr::vmcircbuf_mmap_shm_open");
     }
 
@@ -195,7 +195,7 @@ namespace gr {
   }
 
   gr::vmcircbuf *
-  vmcircbuf_mmap_shm_open_factory::make(int size)
+  vmcircbuf_mmap_shm_open_factory::make(size_t size)
   {
     try {
       return new vmcircbuf_mmap_shm_open(size);

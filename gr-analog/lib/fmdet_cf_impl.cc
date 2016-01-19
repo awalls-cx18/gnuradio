@@ -88,8 +88,8 @@ namespace gr {
       set_scale(d_scl);
     }
 
-    int
-    fmdet_cf_impl::work(int noutput_items,
+    ssize_t
+    fmdet_cf_impl::work(size_t noutput_items,
 			gr_vector_const_void_star &input_items,
 			gr_vector_void_star &output_items)
     {
@@ -97,7 +97,7 @@ namespace gr {
       float *optr = (float*)output_items[0];
       //const gr_complex *scaleiptr = (gr_complex*)input_items[0];
 
-      int size = noutput_items;
+      ssize_t size = static_cast<ssize_t>(noutput_items);
 
       gr_complex Sdot, S0;
       gr_complex S1=d_S1, S2=d_S2, S3=d_S3, S4=d_S4;
@@ -122,7 +122,7 @@ namespace gr {
       d_S2 = S2;
       d_S3 = S3;
       d_S4 = S4;
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace analog */

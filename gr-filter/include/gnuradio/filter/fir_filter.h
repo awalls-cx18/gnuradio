@@ -46,10 +46,10 @@ namespace gr {
 	float filter(const float input[]);
 	void  filterN(float output[],
 		      const float input[],
-		      unsigned long n);
+		      size_t n);
 	void  filterNdec(float output[],
 			 const float input[],
-			 unsigned long n,
+			 size_t n,
 			 unsigned int decimate);
 
       protected:
@@ -78,10 +78,10 @@ namespace gr {
 	gr_complex filter(const gr_complex input[]);
 	void filterN(gr_complex output[],
 		     const gr_complex input[],
-		     unsigned long n);
+		     size_t n);
 	void filterNdec(gr_complex output[],
 			const gr_complex input[],
-			unsigned long n,
+			size_t n,
 			unsigned int decimate);
 
       protected:
@@ -110,10 +110,10 @@ namespace gr {
 	gr_complex filter(const float input[]);
 	void filterN(gr_complex output[],
 		     const float input[],
-		     unsigned long n);
+		     size_t n);
 	void filterNdec(gr_complex output[],
 			const float input[],
-			unsigned long n,
+			size_t n,
 			unsigned int decimate);
 
       protected:
@@ -142,10 +142,10 @@ namespace gr {
 	gr_complex filter(const gr_complex input[]);
 	void filterN(gr_complex output[],
 		     const gr_complex input[],
-		     unsigned long n);
+		     size_t n);
 	void filterNdec(gr_complex output[],
 			const gr_complex input[],
-			unsigned long n,
+			size_t n,
 			unsigned int decimate);
 
       protected:
@@ -174,10 +174,10 @@ namespace gr {
 	gr_complex filter(const short input[]);
 	void filterN(gr_complex output[],
 		     const short input[],
-		     unsigned long n);
+		     size_t n);
 	void filterNdec(gr_complex output[],
 			const short input[],
-			unsigned long n,
+			size_t n,
 			unsigned int decimate);
 
       protected:
@@ -206,10 +206,10 @@ namespace gr {
 	short filter(const float input[]);
 	void filterN(short output[],
 		     const float input[],
-		     unsigned long n);
+		     size_t n);
 	void filterNdec(short output[],
 			const float input[],
-			unsigned long n,
+			size_t n,
 			unsigned int decimate);
 
       protected:

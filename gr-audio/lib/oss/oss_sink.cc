@@ -78,7 +78,7 @@ namespace gr {
                  prefs::singleton()->get_double("audio_oss", "latency", 0.005));
 
       d_chunk_size = (int)(d_sampling_rate * CHUNK_TIME);
-      set_output_multiple(d_chunk_size);
+      set_output_multiple(static_cast<size_t>(d_chunk_size));
 
       d_buffer = new short[d_chunk_size * 2];
 
@@ -122,8 +122,8 @@ namespace gr {
       delete [] d_buffer;
     }
 
-    int
-    oss_sink::work(int noutput_items,
+    ssize_t
+    oss_sink::work(size_t noutput_items,
                    gr_vector_const_void_star &input_items,
                    gr_vector_void_star &output_items)
     {
@@ -133,7 +133,7 @@ namespace gr {
       case 1:              // mono input
         f0 = (const float *)input_items[0];
 
-        for(int i = 0; i < noutput_items; i += d_chunk_size) {
+        for(size_t i = 0; i < noutput_items; i += d_chunk_size) {
           for(int j = 0; j < d_chunk_size; j++) {
             d_buffer[2*j+0] = (short) (f0[j] * 32767);
             d_buffer[2*j+1] = (short) (f0[j] * 32767);
@@ -148,7 +148,7 @@ namespace gr {
         f0 = (const float *) input_items[0];
         f1 = (const float *) input_items[1];
 
-        for(int i = 0; i < noutput_items; i += d_chunk_size) {
+        for(size_t i = 0; i < noutput_items; i += d_chunk_size) {
           for(int j = 0; j < d_chunk_size; j++) {
             d_buffer[2*j+0] = (short)(f0[j] * 32767);
             d_buffer[2*j+1] = (short)(f1[j] * 32767);
@@ -161,7 +161,7 @@ namespace gr {
         break;
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace audio */

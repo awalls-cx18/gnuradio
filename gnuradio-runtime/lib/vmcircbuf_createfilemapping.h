@@ -40,7 +40,7 @@ namespace gr {
   {
   public:
     // CREATORS
-    vmcircbuf_createfilemapping(int size);
+    vmcircbuf_createfilemapping(size_t size);
     virtual ~vmcircbuf_createfilemapping();
 #ifdef HAVE_CREATEFILEMAPPING
   private:
@@ -73,7 +73,7 @@ namespace gr {
      *
      * Call this to create a doubly mapped circular buffer.
      */
-    virtual gr::vmcircbuf *make(int size);
+    virtual gr::vmcircbuf *make(size_t size);
   };
 
 } /* namespace gr */

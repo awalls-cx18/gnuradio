@@ -55,13 +55,13 @@ namespace gr {
     {
     }
 
-    int flex_parse_impl::work(int noutput_items,
+    ssize_t flex_parse_impl::work(size_t noutput_items,
 			      gr_vector_const_void_star &input_items,
 			      gr_vector_void_star &output_items)
     {
       const int32_t *in = (const int32_t *)input_items[0];
 
-      int i = 0;
+      size_t i = 0;
       while(i < noutput_items) {
 	// Accumulate one whole frame's worth of data words (88 of them)
 	d_datawords[d_count] = *in++; i++;
@@ -71,7 +71,7 @@ namespace gr {
 	}
       }
 
-      return i;
+      return static_cast<ssize_t>(i);
     }
 
     /* FLEX data frames (that is, 88 data words per phase recovered

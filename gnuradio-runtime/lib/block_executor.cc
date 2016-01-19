@@ -49,14 +49,14 @@ namespace gr {
 
   static int which_scheduler  = 0;
 
-  inline static unsigned int
-  round_up(unsigned int n, unsigned int multiple)
+  inline static size_t
+  round_up(size_t n, size_t multiple)
   {
     return ((n + multiple - 1) / multiple) * multiple;
   }
 
-  inline static unsigned int
-  round_down(unsigned int n, unsigned int multiple)
+  inline static size_t
+  round_down(size_t n, size_t multiple)
   {
     return (n / multiple) * multiple;
   }
@@ -66,26 +66,26 @@ namespace gr {
   // buffers or -1 if we're output blocked and the output we're
   // blocked on is done.
   //
-  static int
-  min_available_space(block_detail *d, int output_multiple, int min_noutput_items)
+  static ssize_t
+  min_available_space(block_detail *d, size_t output_multiple, size_t min_noutput_items)
   {
-    int min_space = std::numeric_limits<int>::max();
+    ssize_t min_space = std::numeric_limits<ssize_t>::max();
     if(min_noutput_items == 0)
       min_noutput_items = 1;
     for(int i = 0; i < d->noutputs (); i++) {
       gr::thread::scoped_lock guard(*d->output(i)->mutex());
-      int avail_n = round_down(d->output(i)->space_available(), output_multiple);
-      int best_n = round_down(d->output(i)->bufsize()/2, output_multiple);
+      size_t avail_n = round_down(d->output(i)->space_available(), output_multiple);
+      size_t best_n = round_down(d->output(i)->bufsize()/2, output_multiple);
       if(best_n < min_noutput_items)
         throw std::runtime_error("Buffer too small for min_noutput_items");
-      int n = std::min(avail_n, best_n);
+      size_t n = std::min(avail_n, best_n);
       if(n < min_noutput_items){  // We're blocked on output.
         if(d->output(i)->done()){ // Downstream is done, therefore we're done.
           return -1;
         }
         return 0;
       }
-      min_space = std::min(min_space, n);
+      min_space = static_cast<ssize_t>(std::min(static_cast<size_t>(min_space), n));
     }
     return min_space;
   }
@@ -157,9 +157,12 @@ namespace gr {
     return true;
   }
 
-  block_executor::block_executor(block_sptr block, int max_noutput_items)
+  block_executor::block_executor(block_sptr block, size_t max_noutput_items)
     : d_block(block), d_log(0), d_max_noutput_items(max_noutput_items)
   {
+    if(d_max_noutput_items > static_cast<size_t>(std::numeric_limits<ssize_t>::max()))
+      d_max_noutput_items = static_cast<size_t>(std::numeric_limits<ssize_t>::max());
+
     if(ENABLE_LOGGING) {
       std::string name = str(boost::format("sst-%03d.log") % which_scheduler++);
       d_log = new std::ofstream(name.c_str());
@@ -187,12 +190,14 @@ namespace gr {
   block_executor::state
   block_executor::run_one_iteration()
   {
-    int noutput_items;
-    int max_items_avail;
-    int max_noutput_items;
-    int new_alignment = 0;
+    ssize_t s_noutput_items;
+    size_t noutput_items;
+    size_t max_items_avail;
+    size_t max_noutput_items;
+    size_t new_alignment = 0;
     int alignment_state = -1;
     double rrate;
+    static const size_t ssize_t_max = static_cast<size_t>(std::numeric_limits<ssize_t>::max());
 
     block        *m = d_block.get();
     block_detail *d = m->detail().get();
@@ -215,11 +220,14 @@ namespace gr {
       d_start_nitems_read.resize(0);
 
       // determine the minimum available output space
-      noutput_items = min_available_space(d, m->output_multiple (), m->min_noutput_items ());
-      noutput_items = std::min(noutput_items, max_noutput_items);
-      LOG(*d_log << " source\n  noutput_items = " << noutput_items << std::endl);
-      if(noutput_items == -1)		// we're done
+      s_noutput_items = min_available_space(d, m->output_multiple (), m->min_noutput_items ());
+      if(s_noutput_items == -1) {		// we're done
+        LOG(*d_log << " source\n  noutput_items = " << s_noutput_items << std::endl);
         goto were_done;
+      }
+
+      noutput_items = std::min(static_cast<size_t>(s_noutput_items), max_noutput_items);
+      LOG(*d_log << " source\n  noutput_items = " << noutput_items << std::endl);
 
       if(noutput_items == 0){		// we're output blocked
         LOG(*d_log << "  BLKD_OUT\n");
@@ -259,7 +267,9 @@ namespace gr {
       }
 
       // take a swag at how much output we can sink
-      noutput_items = (int)(max_items_avail * m->relative_rate ());
+      noutput_items = static_cast<size_t>(
+                        std::min(static_cast<double>(max_items_avail) * m->relative_rate (),
+                                 static_cast<double>(ssize_t_max)));
       noutput_items = round_down(noutput_items, m->output_multiple ());
       noutput_items = std::min(noutput_items, max_noutput_items);
       LOG(*d_log << "  max_items_avail = " << max_items_avail << std::endl);
@@ -296,7 +306,7 @@ namespace gr {
       }
 
       // determine the minimum available output space
-      noutput_items = min_available_space(d, m->output_multiple(), m->min_noutput_items());
+      s_noutput_items = min_available_space(d, m->output_multiple(), m->min_noutput_items());
       if(ENABLE_LOGGING) {
         *d_log << " regular ";
         if(m->relative_rate() >= 1.0)
@@ -304,11 +314,12 @@ namespace gr {
         else
           *d_log << 1.0/m->relative_rate() << ":1\n";
         *d_log << "  max_items_avail = " << max_items_avail << std::endl;
-        *d_log << "  noutput_items = " << noutput_items << std::endl;
+        *d_log << "  noutput_items = " << s_noutput_items << std::endl;
       }
-      if(noutput_items == -1)		// we're done
+      if(s_noutput_items == -1)		// we're done
         goto were_done;
 
+      noutput_items = static_cast<size_t>(s_noutput_items);
       if(noutput_items == 0) {		// we're output blocked
         LOG(*d_log << "  BLKD_OUT\n");
         return BLKD_OUT;
@@ -318,7 +329,7 @@ namespace gr {
       if(m->fixed_rate()) {
         // try to work it forward starting with max_items_avail.
         // We want to try to consume all the input we've got.
-        int reqd_noutput_items = m->fixed_rate_ninput_to_noutput(max_items_avail);
+        size_t reqd_noutput_items = m->fixed_rate_ninput_to_noutput(max_items_avail);
 
         // only test this if we specifically set the output_multiple
         if(m->output_multiple_set())
@@ -344,6 +355,8 @@ namespace gr {
           if(noutput_items >= m->unaligned()) {
             noutput_items = round_up(noutput_items, m->alignment())	\
               - (m->alignment() - m->unaligned());
+            if(noutput_items > ssize_t_max)
+              noutput_items -= m->alignment();
             new_alignment = 0;
           }
           else {
@@ -381,6 +394,8 @@ namespace gr {
         if(noutput_items > m->output_multiple()) {
           noutput_items /= 2;
           noutput_items = round_up(noutput_items, m->output_multiple());
+          if(noutput_items > ssize_t_max)
+            noutput_items -= m->output_multiple();
           goto try_again;
         }
 
@@ -434,12 +449,13 @@ namespace gr {
 #endif /* GR_PERFORMANCE_COUNTERS */
 
       // Do the actual work of the block
-      int n = m->general_work(noutput_items, d_ninput_items,
-                              d_input_items, d_output_items);
+      ssize_t n = m->general_work(noutput_items, d_ninput_items,
+                                  d_input_items, d_output_items);
 
 #ifdef GR_PERFORMANCE_COUNTERS
       if(d_use_pc)
-        d->stop_perf_counters(noutput_items, n);
+        d->stop_perf_counters(noutput_items,
+                              static_cast<size_t>(n < 0 ? 0 : n));
 #endif /* GR_PERFORMANCE_COUNTERS */
 
       LOG(*d_log << "  general_work: noutput_items = " << noutput_items
@@ -471,7 +487,7 @@ namespace gr {
         goto were_done;
 
       if(n != block::WORK_CALLED_PRODUCE)
-        d->produce_each(n);     // advance write pointers
+        d->produce_each(static_cast<size_t>(n < 0 ? 0 : n));  // advance write pointers
 
       if(d->d_produce_or > 0)   // block produced something
         return READY;

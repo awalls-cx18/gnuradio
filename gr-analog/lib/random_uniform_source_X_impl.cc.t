@@ -57,19 +57,19 @@ namespace gr {
       return d_rng->ran_int();
     }
 
-    int
-    @IMPL_NAME@::work(int noutput_items,
+    ssize_t
+    @IMPL_NAME@::work(size_t noutput_items,
               gr_vector_const_void_star &input_items,
               gr_vector_void_star &output_items)
     {
       @TYPE@ *out = (@TYPE@*)output_items[0];
 
-      for(int i = 0; i < noutput_items; i++){
+      for(size_t i = 0; i < noutput_items; i++){
         *out++ = (@TYPE@) random_value();
       }
 
       // Tell runtime system how many output items we produced.
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
 

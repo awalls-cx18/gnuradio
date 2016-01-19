@@ -144,7 +144,7 @@ namespace gr {
 
       d_jack_buffer_size = jack_get_buffer_size(d_jack_client);
 
-      set_output_multiple(d_jack_buffer_size);
+      set_output_multiple(static_cast<size_t>(d_jack_buffer_size));
 
 
       assert(sizeof(float)==sizeof(sample_t));
@@ -196,8 +196,8 @@ namespace gr {
         jack_ringbuffer_free(d_ringbuffer[i]);
     }
 
-    int
-    jack_sink::work(int noutput_items,
+    ssize_t
+    jack_sink::work(size_t noutput_items,
                     gr_vector_const_void_star &input_items,
                     gr_vector_void_star &output_items)
     {
@@ -209,7 +209,7 @@ namespace gr {
         int k = 0;
 
         // write_size and work_size are in bytes
-        int work_size = noutput_items*sizeof(sample_t);
+        size_t work_size = noutput_items*sizeof(sample_t);
         unsigned int write_size;
 
         while(work_size > 0) {
@@ -234,7 +234,8 @@ namespace gr {
 #endif
 
           write_space -= write_space%(d_jack_buffer_size*sizeof(sample_t));
-          write_size = std::min(write_space, (unsigned int)work_size);
+          write_size = static_cast<unsigned int>(
+                         std::min(static_cast<size_t>(write_space), work_size));
 
           if(jack_ringbuffer_write(d_ringbuffer[i], (char *) &(in[i][k]),
                                    write_size) < write_size) {
@@ -245,7 +246,7 @@ namespace gr {
         }
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
     void

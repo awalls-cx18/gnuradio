@@ -74,8 +74,8 @@ namespace gr {
       return mod_2pi(sample_phase - ref_phase);
     }
 
-    int
-    pll_freqdet_cf_impl::work(int noutput_items,
+    ssize_t
+    pll_freqdet_cf_impl::work(size_t noutput_items,
 			      gr_vector_const_void_star &input_items,
 			      gr_vector_void_star &output_items)
     {
@@ -83,7 +83,7 @@ namespace gr {
       float *optr = (float*)output_items[0];
 
       float error;
-      int size = noutput_items;
+      ssize_t size = static_cast<ssize_t>(noutput_items);
 
       while(size-- > 0) {
 	*optr++ = d_freq;
@@ -94,7 +94,7 @@ namespace gr {
 	phase_wrap();
 	frequency_limit();
       }
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
     void

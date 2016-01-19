@@ -57,8 +57,8 @@ namespace gr {
     d_inputs = std::vector<endpoint_vector_t>(max_inputs);
     d_outputs = endpoint_vector_t(max_outputs);
 
-    d_max_output_buffer = std::vector<size_t>(std::max(max_outputs,1), 0);
-    d_min_output_buffer = std::vector<size_t>(std::max(max_outputs,1), 0);
+    d_max_output_buffer = std::vector<ssize_t>(std::max(max_outputs,1), 0);
+    d_min_output_buffer = std::vector<ssize_t>(std::max(max_outputs,1), 0);
   }
 
   hier_block2_detail::~hier_block2_detail()
@@ -529,8 +529,8 @@ namespace gr {
     // Only run setup_rpc if ControlPort config param is enabled.
     bool ctrlport_on = prefs::singleton()->get_bool("ControlPort", "on", false);
 
-    int min_buff = 0;
-    int max_buff = 0;
+    ssize_t min_buff = 0;
+    ssize_t max_buff = 0;
     // Determine how the buffers should be set
     bool set_all_min_buff = d_owner->all_min_output_buffer_p();
     bool set_all_max_buff = d_owner->all_max_output_buffer_p();

@@ -106,7 +106,7 @@ namespace gr {
       d_chunk_size = std::min(1, 16384/width); //width*16;
       d_chunk_size = d_chunk_size*width;
       //d_chunk_size = (int) (width);
-      set_output_multiple(d_chunk_size);
+      set_output_multiple(static_cast<size_t>(d_chunk_size));
 
       /* Set the default playback area */
       d_dst_rect.x = 0;
@@ -241,13 +241,13 @@ namespace gr {
       return noutput_items_produced;
     }
 
-    int
-    sink_s_impl::work(int noutput_items,
+    ssize_t
+    sink_s_impl::work(size_t noutput_items,
 		      gr_vector_const_void_star &input_items,
 		      gr_vector_void_star &output_items)
     {
       short *src_pixels_0,*src_pixels_1,*src_pixels_2;
-      int noutput_items_produced = 0;
+      ssize_t noutput_items_produced = 0;
       int plane;
       int delay = (int)d_avg_delay;
 
@@ -265,7 +265,7 @@ namespace gr {
 	src_pixels_0 = (short *)input_items[0];
 	src_pixels_1 = (short *)input_items[1];
 	src_pixels_2 = (short *)input_items[2];
-	for(int i = 0; i < noutput_items; i += d_chunk_size) {
+	for(size_t i = 0; i < noutput_items; i += static_cast<size_t>(d_chunk_size)) {
 	  copy_plane_to_surface(1,d_chunk_size, src_pixels_1);
 	  copy_plane_to_surface(2,d_chunk_size, src_pixels_2);
 	  noutput_items_produced += copy_plane_to_surface(0,d_chunk_size, src_pixels_0);
@@ -279,7 +279,7 @@ namespace gr {
 	  // first channel=Y, second channel is alternating pixels U and V
 	  src_pixels_0 = (short *)input_items[0];
 	  src_pixels_1 = (short *)input_items[1];
-	  for(int i = 0; i < noutput_items; i += d_chunk_size) {
+	  for(size_t i = 0; i < noutput_items; i += static_cast<size_t>(d_chunk_size)) {
 	    copy_plane_to_surface(12, d_chunk_size/2, src_pixels_1);
 	    noutput_items_produced += copy_plane_to_surface(0, d_chunk_size, src_pixels_0);
 	    src_pixels_0 += d_chunk_size;
@@ -290,7 +290,7 @@ namespace gr {
 	  // first channel=Y, second channel is alternating lines U and V
 	  src_pixels_0 = (short *)input_items[0];
 	  src_pixels_1 = (short *)input_items[1];
-	  for(int i = 0; i < noutput_items; i += d_chunk_size) {
+	  for(size_t i = 0; i < noutput_items; i += static_cast<size_t>(d_chunk_size)) {
 	    copy_plane_to_surface(1222, d_chunk_size/2, src_pixels_1);
 	    noutput_items_produced += copy_plane_to_surface(0, d_chunk_size, src_pixels_0);
 	    src_pixels_0 += d_chunk_size;
@@ -302,7 +302,7 @@ namespace gr {
 	/* Y component */
 	plane=0;
 	src_pixels_0 = (short *)input_items[plane];
-	for(int i = 0; i < noutput_items; i += d_chunk_size) {
+	for(size_t i = 0; i < noutput_items; i += static_cast<size_t>(d_chunk_size)) {
 	  noutput_items_produced += copy_plane_to_surface(plane, d_chunk_size, src_pixels_0);
 	  src_pixels_0 += d_chunk_size;
 	}

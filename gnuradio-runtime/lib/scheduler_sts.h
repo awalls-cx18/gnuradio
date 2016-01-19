@@ -42,11 +42,11 @@ namespace gr {
      * The scheduler will continue running until all blocks until they
      * report that they are done or the stop method is called.
      */
-    scheduler_sts(flat_flowgraph_sptr ffg, int max_noutput_items);
+    scheduler_sts(flat_flowgraph_sptr ffg, size_t max_noutput_items);
 
   public:
     static scheduler_sptr make(flat_flowgraph_sptr ffg,
-                               int max_noutput_items);
+                               size_t max_noutput_items);
 
     ~scheduler_sts();
 

@@ -51,19 +51,19 @@ namespace gr {
   namespace fft {
 
     gr_complex *
-    malloc_complex(int size)
+    malloc_complex(size_t size)
     {
       return (gr_complex*)fftwf_malloc(sizeof(gr_complex)*size);
     }
 
     float *
-    malloc_float(int size)
+    malloc_float(size_t size)
     {
       return (float*)fftwf_malloc(sizeof(float)*size);
     }
 
     double *
-    malloc_double(int size)
+    malloc_double(size_t size)
     {
       return (double*)fftwf_malloc(sizeof(double)*size);
     }

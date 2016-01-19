@@ -73,17 +73,17 @@ namespace gr {
       d_word = 0;
     }
 
-    int
-    hrpt_deframer_impl::general_work(int noutput_items,
-				     gr_vector_int &ninput_items,
+    ssize_t
+    hrpt_deframer_impl::general_work(size_t noutput_items,
+				     gr_vector_size_t &ninput_items,
 				     gr_vector_const_void_star &input_items,
 				     gr_vector_void_star &output_items)
     {
-      int ninputs = ninput_items[0];
+      size_t ninputs = ninput_items[0];
       const char *in = (const char *)input_items[0];
       unsigned short *out = (unsigned short *)output_items[0];
 
-      int i = 0, j = 0;
+      size_t i = 0, j = 0;
       while(i < ninputs && j < noutput_items) {
 	char bit = in[i++];
 	char diff = bit^d_last_bit;
@@ -130,7 +130,7 @@ namespace gr {
       }
 
       consume_each(i);
-      return j;
+      return static_cast<ssize_t>(j);
     }
 
   } /* namespace noaa */

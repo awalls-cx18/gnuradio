@@ -50,7 +50,7 @@ namespace gr {
     class alsa_source : public source
     {
       // typedef for pointer to class work method
-      typedef int(alsa_source::*work_t)(int noutput_items,
+      typedef ssize_t(alsa_source::*work_t)(size_t noutput_items,
                                         gr_vector_const_void_star &input_items,
                                         gr_vector_void_star &output_items);
 
@@ -84,26 +84,26 @@ namespace gr {
 
       bool check_topology(int ninputs, int noutputs);
 
-      int work(int noutput_items,
+      ssize_t work(size_t noutput_items,
                gr_vector_const_void_star &input_items,
                gr_vector_void_star &output_items);
 
     protected:
       bool read_buffer(void *buffer, unsigned nframes, unsigned sizeof_frame);
 
-      int work_s16(int noutput_items,
+      ssize_t work_s16(size_t noutput_items,
                    gr_vector_const_void_star &input_items,
                    gr_vector_void_star &output_items);
 
-      int work_s16_2x1(int noutput_items,
+      ssize_t work_s16_2x1(size_t noutput_items,
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items);
 
-      int work_s32(int noutput_items,
+      ssize_t work_s32(size_t noutput_items,
                    gr_vector_const_void_star &input_items,
                    gr_vector_void_star &output_items);
 
-      int work_s32_2x1(int noutput_items,
+      ssize_t work_s32_2x1(size_t noutput_items,
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items);
     };

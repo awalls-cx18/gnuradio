@@ -49,7 +49,7 @@ namespace gr {
     {
       d_fir = new kernel::@BASE_NAME@(decimation, taps);
       d_updated = false;
-      set_history(d_fir->ntaps());
+      set_history(static_cast<size_t>(d_fir->ntaps()));
 
       const int alignment_multiple =
 	volk_get_alignment() / sizeof(float);
@@ -75,8 +75,8 @@ namespace gr {
       return d_fir->taps();
     }
 
-    int
-    @IMPL_NAME@::work(int noutput_items,
+    ssize_t
+    @IMPL_NAME@::work(size_t noutput_items,
 		      gr_vector_const_void_star &input_items,
 		      gr_vector_void_star &output_items)
     {
@@ -86,7 +86,7 @@ namespace gr {
       @O_TYPE@ *out = (@O_TYPE@*)output_items[0];
 
       if (d_updated) {
-	set_history(d_fir->ntaps());
+        set_history(static_cast<size_t>(d_fir->ntaps()));
 	d_updated = false;
 	return 0;	     // history requirements may have changed.
       }
@@ -99,7 +99,7 @@ namespace gr {
 			  decimation());
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace filter */

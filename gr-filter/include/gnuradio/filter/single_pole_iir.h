@@ -58,7 +58,7 @@ namespace gr {
        * \brief compute an array of N output values.
        * \p input must have n valid entries.
        */
-      void filterN(o_type output[], const i_type input[], unsigned long n);
+      void filterN(o_type output[], const i_type input[], size_t n);
 
       /*!
        * \brief install \p alpha as the current taps.
@@ -106,9 +106,9 @@ namespace gr {
     void
     single_pole_iir<o_type, i_type, tap_type>::filterN(o_type output[],
 						       const i_type input[],
-						       unsigned long n)
+						       size_t n)
     {
-      for(unsigned i = 0; i < n; i++)
+      for(size_t i = 0; i < n; i++)
 	output[i] = filter(input[i]);
     }
 
@@ -142,7 +142,7 @@ namespace gr {
        * \brief compute an array of N output values.
        * \p input must have n valid entries.
        */
-      void filterN(gr_complex output[], const i_type input[], unsigned long n);
+      void filterN(gr_complex output[], const i_type input[], size_t n);
 
       /*!
        * \brief install \p alpha as the current taps.
@@ -188,9 +188,9 @@ namespace gr {
     void
     single_pole_iir<gr_complex, i_type, double>::filterN(gr_complex output[],
 							 const i_type input[],
-							 unsigned long n)
+							 size_t n)
     {
-      for(unsigned i = 0; i < n; i++)
+      for(size_t i = 0; i < n; i++)
 	output[i] = filter(input[i]);
     }
 

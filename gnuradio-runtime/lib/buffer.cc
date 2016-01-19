@@ -79,7 +79,7 @@ namespace gr {
   }
 
 
-  buffer::buffer(int nitems, size_t sizeof_item, block_sptr link)
+  buffer::buffer(size_t nitems, size_t sizeof_item, block_sptr link)
     : d_base(0), d_bufsize(0), d_max_reader_delay(0), d_vmcircbuf(0),
       d_sizeof_item(sizeof_item), d_link(link),
       d_write_index(0), d_abs_write_offset(0), d_done(false),
@@ -92,7 +92,7 @@ namespace gr {
   }
 
   buffer_sptr
-  make_buffer(int nitems, size_t sizeof_item, block_sptr link)
+  make_buffer(size_t nitems, size_t sizeof_item, block_sptr link)
   {
     return buffer_sptr(new buffer(nitems, sizeof_item, link));
   }
@@ -109,22 +109,26 @@ namespace gr {
    * returns true iff successful.
    */
   bool
-  buffer::allocate_buffer(int nitems, size_t sizeof_item)
+  buffer::allocate_buffer(size_t nitems, size_t sizeof_item)
   {
-    int orig_nitems = nitems;
+    size_t ssize_t_max = static_cast<size_t>(std::numeric_limits<ssize_t>::max());
+    size_t orig_nitems = nitems;
 
     // Any buffersize we come up with must be a multiple of min_nitems.
-    int granularity = gr::vmcircbuf_sysconfig::granularity();
-    int min_nitems =  minimum_buffer_items(sizeof_item, granularity);
+    size_t granularity = static_cast<size_t>(gr::vmcircbuf_sysconfig::granularity());
+    size_t min_nitems = static_cast<size_t>(minimum_buffer_items(sizeof_item, granularity));
 
     // Round-up nitems to a multiple of min_nitems.
     if(nitems % min_nitems != 0)
       nitems = ((nitems / min_nitems) + 1) * min_nitems;
+    // Round-down nitems to fit into a ssize_t without overflow
+    if(nitems > ssize_t_max)
+      nitems = (ssize_t_max / min_nitems) * min_nitems;
 
     // If we rounded-up a whole bunch, give the user a heads up.
     // This only happens if sizeof_item is not a power of two.
 
-    if(nitems > 2 * orig_nitems && nitems * (int) sizeof_item > granularity){
+    if(nitems > 2 * orig_nitems && nitems * sizeof_item > granularity){
       std::cerr << "gr::buffer::allocate_buffer: warning: tried to allocate\n"
                 << "   " << orig_nitems << " items of size "
                 << sizeof_item << ". Due to alignment requirements\n"
@@ -145,7 +149,7 @@ namespace gr {
     return true;
   }
 
-  int
+  size_t
   buffer::space_available()
   {
     if(d_readers.empty())
@@ -154,7 +158,7 @@ namespace gr {
     else {
       // Find out the maximum amount of data available to our readers
 
-      int most_data = d_readers[0]->items_available();
+      size_t most_data = d_readers[0]->items_available();
       uint64_t min_items_read = d_readers[0]->nitems_read();
       for(size_t i = 1; i < d_readers.size (); i++) {
         most_data = std::max(most_data, d_readers[i]->items_available());
@@ -179,7 +183,7 @@ namespace gr {
   }
 
   void
-  buffer::update_write_pointer(int nitems)
+  buffer::update_write_pointer(size_t nitems)
   {
     gr::thread::scoped_lock guard(*mutex());
     d_write_index = index_add(d_write_index, nitems);
@@ -194,10 +198,10 @@ namespace gr {
   }
 
   buffer_reader_sptr
-  buffer_add_reader(buffer_sptr buf, int nzero_preload, block_sptr link, int delay)
+  buffer_add_reader(buffer_sptr buf, size_t nzero_preload, block_sptr link, int delay)
   {
-    if(nzero_preload < 0)
-      throw std::invalid_argument("buffer_add_reader: nzero_preload must be >= 0");
+    if(nzero_preload > buf->d_bufsize)
+      throw std::invalid_argument("buffer_add_reader: nzero_preload must be <= buf->d_bufsize");
 
     buffer_reader_sptr r(new buffer_reader(buf,
                                            buf->index_sub(buf->d_write_index,
@@ -288,7 +292,7 @@ namespace gr {
 
   // ----------------------------------------------------------------------------
 
-  buffer_reader::buffer_reader(buffer_sptr buffer, unsigned int read_index,
+  buffer_reader::buffer_reader(buffer_sptr buffer, size_t read_index,
                                block_sptr link)
     : d_buffer(buffer), d_read_index(read_index), d_abs_read_offset(0), d_link(link),
       d_attr_delay(0)
@@ -318,7 +322,7 @@ namespace gr {
     return d_attr_delay;
   }
 
-  int
+  size_t
   buffer_reader::items_available() const
   {
     return d_buffer->index_sub(d_buffer->d_write_index, d_read_index);
@@ -331,7 +335,7 @@ namespace gr {
   }
 
   void
-  buffer_reader::update_read_pointer(int nitems)
+  buffer_reader::update_read_pointer(size_t nitems)
   {
     gr::thread::scoped_lock guard(*mutex());
     d_read_index = d_buffer->index_add (d_read_index, nitems);

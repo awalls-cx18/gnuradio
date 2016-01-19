@@ -80,18 +80,18 @@ namespace gr {
       return (d_state == ST_UNMUTED || d_state == ST_ATTACK);
     }
 
-    int
-    squelch_base_ff_impl::general_work(int noutput_items,
-				       gr_vector_int &ninput_items,
+    ssize_t
+    squelch_base_ff_impl::general_work(size_t noutput_items,
+				       gr_vector_size_t &ninput_items,
 				       gr_vector_const_void_star &input_items,
 				       gr_vector_void_star &output_items)
     {
       const float *in = (const float *) input_items[0];
       float *out = (float *) output_items[0];
 
-      int j = 0;
+      size_t j = 0;
 
-      for(int i = 0; i < noutput_items; i++) {
+      for(size_t i = 0; i < noutput_items; i++) {
         update_state(in[i]);
 
         // Adjust envelope based on current state
@@ -150,7 +150,7 @@ namespace gr {
       }
 
       consume_each(noutput_items);  // Use all the inputs
-      return j;		        // But only report outputs copied
+      return static_cast<ssize_t>(j);  // But only report outputs copied
     }
 
   } /* namespace analog */

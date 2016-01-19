@@ -44,7 +44,7 @@ namespace gr {
       d_taps = taps;
       d_fir = new kernel::fir_filter_fff(1, taps);
       d_delay = d_fir->ntaps() / 2;
-      set_history(d_fir->ntaps());
+      set_history(static_cast<size_t>(d_fir->ntaps()));
 
       const int alignment_multiple =
 	volk_get_alignment() / sizeof(float);
@@ -70,8 +70,8 @@ namespace gr {
       d_update = true;
     }
 
-    int
-    filter_delay_fc_impl::work(int noutput_items,
+    ssize_t
+    filter_delay_fc_impl::work(size_t noutput_items,
 			       gr_vector_const_void_star &input_items,
 			       gr_vector_void_star &output_items)
     {
@@ -82,20 +82,20 @@ namespace gr {
       if(d_update) {
 	d_fir->set_taps(d_taps);
 	d_delay = d_fir->ntaps() / 2;
-	set_history(d_fir->ntaps());
+        set_history(static_cast<size_t>(d_fir->ntaps()));
 	return 0;
       }
 
       switch(input_items.size ()) {
       case 1:
-	for(int i = 0; i < noutput_items; i++) {
+	for(size_t i = 0; i < noutput_items; i++) {
 	  out[i] = gr_complex(in0[i + d_delay],
 			      d_fir->filter(&in0[i]));
 	}
 	break;
 
       case 2:
-	for(int j = 0; j < noutput_items; j++) {
+	for(size_t j = 0; j < noutput_items; j++) {
 	  out[j] = gr_complex(in0[j + d_delay],
 			      d_fir->filter(&in1[j]));
 	}
@@ -105,7 +105,7 @@ namespace gr {
 	assert(0);
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace filter */

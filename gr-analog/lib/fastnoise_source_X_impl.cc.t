@@ -83,40 +83,40 @@ namespace gr {
     void
     @IMPL_NAME@::generate()
     {
-      int noutput_items = d_samples.size();
+      size_t noutput_items = d_samples.size();
       switch(d_type){
 #if @IS_COMPLEX@	// complex?
 
       case GR_UNIFORM:
-	for(int i = 0; i < noutput_items; i++)
+	for(size_t i = 0; i < noutput_items; i++)
 	  d_samples[i] = gr_complex(d_ampl * ((d_rng.ran1() * 2.0) - 1.0),
 				    d_ampl * ((d_rng.ran1() * 2.0) - 1.0));
 	break;
 
       case GR_GAUSSIAN:
-	for(int i = 0; i < noutput_items; i++)
+	for(size_t i = 0; i < noutput_items; i++)
 	  d_samples[i] = d_ampl * d_rng.rayleigh_complex();
 	break;
 
 #else			// nope...
 
       case GR_UNIFORM:
-	for(int i = 0; i < noutput_items; i++)
+	for(size_t i = 0; i < noutput_items; i++)
 	  d_samples[i] = (@TYPE@)(d_ampl * ((d_rng.ran1() * 2.0) - 1.0));
 	break;
 
       case GR_GAUSSIAN:
-	for(int i = 0; i < noutput_items; i++)
+	for(size_t i = 0; i < noutput_items; i++)
 	  d_samples[i] = (@TYPE@)(d_ampl * d_rng.gasdev());
 	break;
 
       case GR_LAPLACIAN:
-	for(int i = 0; i < noutput_items; i++)
+	for(size_t i = 0; i < noutput_items; i++)
 	  d_samples[i] = (@TYPE@)(d_ampl * d_rng.laplacian());
 	break;
 
       case GR_IMPULSE:	// FIXME changeable impulse settings
-	for(int i = 0; i < noutput_items; i++)
+	for(size_t i = 0; i < noutput_items; i++)
 	  d_samples[i] = (@TYPE@)(d_ampl * d_rng.impulse(9));
 	break;
 #endif
@@ -126,8 +126,8 @@ namespace gr {
       }
     }
 
-    int
-    @IMPL_NAME@::work(int noutput_items,
+    ssize_t
+    @IMPL_NAME@::work(size_t noutput_items,
 		      gr_vector_const_void_star &input_items,
 		      gr_vector_void_star &output_items)
     {
@@ -135,11 +135,11 @@ namespace gr {
 
       @TYPE@ *out = (@TYPE@*)output_items[0];
 
-      for(int i=0; i<noutput_items; i++) {
+      for(size_t i=0; i<noutput_items; i++) {
         out[i] = sample();
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
     @TYPE@ @IMPL_NAME@::sample()

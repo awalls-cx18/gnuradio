@@ -81,10 +81,10 @@ namespace gr {
       flex_sync_impl();
       ~flex_sync_impl();
 
-      void forecast(int noutput_items, gr_vector_int &inputs_required);
+      void forecast(size_t noutput_items, gr_vector_size_t &inputs_required);
 
-      int general_work(int noutput_items,
-		       gr_vector_int &ninput_items,
+      ssize_t general_work(size_t noutput_items,
+		       gr_vector_size_t &ninput_items,
 		       gr_vector_const_void_star &input_items,
 		       gr_vector_void_star &output_items);
     };

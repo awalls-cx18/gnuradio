@@ -97,8 +97,8 @@ namespace gr {
       return d_lock_threshold = threshold;
     }
 
-    int
-    pll_carriertracking_cc_impl::work(int noutput_items,
+    ssize_t
+    pll_carriertracking_cc_impl::work(size_t noutput_items,
 				      gr_vector_const_void_star &input_items,
 				      gr_vector_void_star &output_items)
     {
@@ -108,7 +108,7 @@ namespace gr {
       float error;
       float t_imag, t_real;
 
-      for(int i = 0; i < noutput_items; i++) {
+      for(size_t i = 0; i < noutput_items; i++) {
 	gr::sincosf(d_phase, &t_imag, &t_real);
 	optr[i] = iptr[i] * gr_complex(t_real, -t_imag);
 
@@ -124,7 +124,7 @@ namespace gr {
 	if((d_squelch_enable) && !lock_detector())
 	  optr[i] = 0;
       }
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
     void

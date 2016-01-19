@@ -74,7 +74,7 @@ namespace gr {
       void set_channel_map(const std::vector<int> &map);
       std::vector<int> channel_map() const;
 
-      int work(int noutput_items,
+      size_t work(size_t noutput_items,
 	       gr_vector_const_void_star &input_items,
 	       gr_vector_void_star &output_items);
     };

@@ -51,7 +51,7 @@ namespace gr {
     {
     }
 
-    int flex_deinterleave_impl::work(int noutput_items,
+    ssize_t flex_deinterleave_impl::work(size_t noutput_items,
 				     gr_vector_const_void_star &input_items,
 				     gr_vector_void_star &output_items)
     {
@@ -100,7 +100,7 @@ namespace gr {
 	*out++ = codeword;
       }
 
-      return j;
+      return static_cast<ssize_t>(j);
     }
 
   } /* namespace pager */

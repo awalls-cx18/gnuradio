@@ -56,8 +56,8 @@ namespace gr {
     {
     }
 
-    int
-    quadrature_demod_cf_impl::work(int noutput_items,
+    ssize_t
+    quadrature_demod_cf_impl::work(size_t noutput_items,
 				   gr_vector_const_void_star &input_items,
 				   gr_vector_void_star &output_items)
     {
@@ -65,12 +65,13 @@ namespace gr {
       float *out = (float*)output_items[0];
 
       std::vector<gr_complex> tmp(noutput_items);
+      // FIXME volk orc safe limit is MAX_INT items
       volk_32fc_x2_multiply_conjugate_32fc(&tmp[0], &in[1], &in[0], noutput_items);
-      for(int i = 0; i < noutput_items; i++) {
+      for(size_t i = 0; i < noutput_items; i++) {
         out[i] = d_gain * gr::fast_atan2f(imag(tmp[i]), real(tmp[i]));
       }
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace analog */

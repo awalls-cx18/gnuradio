@@ -47,7 +47,7 @@ namespace gr {
       void set_gain(float gain) { kernel::agc2_ff::set_gain(gain); }
       void set_max_gain(float max_gain) { kernel::agc2_ff::set_max_gain(max_gain); }
 
-      int work(int noutput_items,
+      ssize_t work(size_t noutput_items,
 	       gr_vector_const_void_star &input_items,
 	       gr_vector_void_star &output_items);
     };

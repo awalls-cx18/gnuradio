@@ -51,15 +51,15 @@ namespace gr {
     {
     }
 
-    int
-    probe_avg_mag_sqrd_cf_impl::work(int noutput_items,
+    ssize_t
+    probe_avg_mag_sqrd_cf_impl::work(size_t noutput_items,
 				     gr_vector_const_void_star &input_items,
 				     gr_vector_void_star &output_items)
     {
       const gr_complex *in = (const gr_complex*)input_items[0];
       float *out = (float*)output_items[0];
 
-      for(int i = 0; i < noutput_items; i++) {
+      for(size_t i = 0; i < noutput_items; i++) {
 	out[i] = d_iir.prev_output();
 	double mag_sqrd = in[i].real()*in[i].real() + in[i].imag()*in[i].imag();
 	d_iir.filter(mag_sqrd);	// computed for side effect: prev_output()
@@ -67,7 +67,7 @@ namespace gr {
 
       d_unmuted = d_iir.prev_output() >= d_threshold;
       d_level = d_iir.prev_output();
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
     double

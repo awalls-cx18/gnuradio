@@ -38,7 +38,7 @@ namespace gr {
   make_test(const std::string &name=std::string("test"),
             int min_inputs=1, int max_inputs=1, unsigned int sizeof_input_item=1,
             int min_outputs=1, int max_outputs=1, unsigned int sizeof_output_item=1,
-            unsigned int history=1,unsigned int output_multiple=1,double relative_rate=1.0,
+            size_t history=1, size_t output_multiple=1,double relative_rate=1.0,
             bool fixed_rate=true,consume_type_t cons_type=CONSUME_NOUTPUT_ITEMS,
             produce_type_t prod_type=PRODUCE_NOUTPUT_ITEMS);
 
@@ -61,8 +61,8 @@ namespace gr {
   public:
     ~test() {}
 
-    int general_work(int noutput_items,
-                     gr_vector_int &ninput_items,
+    ssize_t general_work(size_t noutput_items,
+                     gr_vector_size_t &ninput_items,
                      gr_vector_const_void_star &input_items,
                      gr_vector_void_star &output_items);
 
@@ -80,12 +80,12 @@ namespace gr {
      * number of data items required on each input stream. The
      * estimate doesn't have to be exact, but should be close.
      */
-    void forecast(int noutput_items,
-                  gr_vector_int &ninput_items_required)
+    void forecast(size_t noutput_items,
+                  gr_vector_size_t &ninput_items_required)
     {
       unsigned ninputs = ninput_items_required.size();
       for(unsigned i = 0; i < ninputs; i++)
-        ninput_items_required[i] = (int)((double)noutput_items / relative_rate()) + (int)history();
+        ninput_items_required[i] = (size_t)((double)noutput_items / relative_rate()) + history();
     }
 
     /*!
@@ -129,8 +129,8 @@ namespace gr {
      * returns true.  Generally speaking, you don't need to override
      * this.
      */
-    int fixed_rate_ninput_to_noutput(int ninput) {
-      return (int)((double)ninput/relative_rate());
+    size_t fixed_rate_ninput_to_noutput(size_t ninput) {
+      return (size_t)((double)ninput/relative_rate());
     }
 
     /*!
@@ -138,8 +138,8 @@ namespace gr {
      * required to produce noutput. N.B. this is only defined if
      * fixed_rate returns true.
      */
-    int fixed_rate_noutput_to_ninput(int noutput) {
-      return (int)((double)noutput*relative_rate());
+    size_t fixed_rate_noutput_to_ninput(size_t noutput) {
+      return (size_t)((double)noutput*relative_rate());
     }
 
     /*!
@@ -165,7 +165,7 @@ namespace gr {
      * \param limit min or maximum items to consume (depending on
      * consume_type)
      */
-    void set_consume_limit(unsigned int limit) {
+    void set_consume_limit(size_t limit) {
       d_min_consume=limit; d_max_consume=limit;
     }
 
@@ -184,7 +184,7 @@ namespace gr {
      * \param limit min or maximum items to produce (depending on
      * produce_type)
      */
-    void set_produce_limit(unsigned int limit) {
+    void set_produce_limit(size_t limit) {
       d_min_produce=limit; d_max_produce=limit;
     }
 
@@ -196,15 +196,15 @@ namespace gr {
     bool d_check_topology;
     char d_temp;
     consume_type_t d_consume_type;
-    int d_min_consume;
-    int d_max_consume;
+    size_t d_min_consume;
+    size_t d_max_consume;
     produce_type_t d_produce_type;
-    int d_min_produce;
-    int d_max_produce;
+    size_t d_min_produce;
+    size_t d_max_produce;
     test(const std::string &name,int min_inputs, int max_inputs,
          unsigned int sizeof_input_item,
          int min_outputs, int max_outputs, unsigned int sizeof_output_item,
-         unsigned int history, unsigned int output_multiple, double relative_rate,
+         size_t history, size_t output_multiple, double relative_rate,
          bool fixed_rate, consume_type_t cons_type, produce_type_t prod_type);
 
     friend GR_RUNTIME_API test_sptr make_test(const std::string &name,
@@ -212,8 +212,8 @@ namespace gr {
                                               unsigned int sizeof_input_item,
                                               int min_outputs, int max_outputs,
                                               unsigned int sizeof_output_item,
-                                              unsigned int history,
-                                              unsigned int output_multiple,
+                                              size_t history,
+                                              size_t output_multiple,
                                               double relative_rate,
                                               bool fixed_rate,
                                               consume_type_t cons_type,

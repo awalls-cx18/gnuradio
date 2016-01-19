@@ -103,7 +103,7 @@ namespace gr {
       bool stop(void);
       std::vector<std::complex<float> > finite_acquisition(const size_t nsamps);
       std::vector<std::vector<std::complex<float> > > finite_acquisition_v(const size_t nsamps);
-      int work(int noutput_items,
+      ssize_t work(size_t noutput_items,
                gr_vector_const_void_star &input_items,
                gr_vector_void_star &output_items);
 

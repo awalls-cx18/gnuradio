@@ -31,12 +31,12 @@
 #include <gnuradio/random.h>
 
 static void
-leak_check(void f())
+leak_check(void f(bool), bool large)
 {
   long	buffer_count = gr::buffer_ncurrently_allocated();
   long	buffer_reader_count = gr::buffer_reader_ncurrently_allocated();
 
-  f();
+  f(large);
 
   CPPUNIT_ASSERT_EQUAL(buffer_reader_count, gr::buffer_reader_ncurrently_allocated());
   CPPUNIT_ASSERT_EQUAL(buffer_count, gr::buffer_ncurrently_allocated());
@@ -48,15 +48,18 @@ leak_check(void f())
 //
 
 static void
-t0_body()
+t0_body(bool large)
 {
-  int nitems = 4000 / sizeof(int);
-  int counter = 0;
+  size_t nitems = 4000 / sizeof(size_t);
+  size_t counter = 0;
 
-  gr::buffer_sptr buf(gr::make_buffer(nitems, sizeof(int), gr::block_sptr()));
+  if (large)
+    nitems += (static_cast<size_t>(std::numeric_limits<int>::max()) + 1) * 2;
 
-  int last_sa;
-  int sa;
+  gr::buffer_sptr buf(gr::make_buffer(nitems, sizeof(size_t), gr::block_sptr()));
+
+  size_t last_sa;
+  size_t sa;
 
   sa = buf->space_available();
   CPPUNIT_ASSERT(sa > 0);
@@ -67,10 +70,10 @@ t0_body()
     CPPUNIT_ASSERT_EQUAL(last_sa, sa);
     last_sa = sa;
 
-    int *p = (int*)buf->write_pointer();
+    size_t *p = (size_t*)buf->write_pointer();
     CPPUNIT_ASSERT(p != 0);
 
-    for(int j = 0; j < sa; j++)
+    for(size_t j = 0; j < sa; j++)
       *p++ = counter++;
 
     buf->update_write_pointer(sa);
@@ -82,26 +85,29 @@ t0_body()
 //
 
 static void
-t1_body()
+t1_body(bool large)
 {
-  int nitems = 4000 / sizeof(int);
-  int write_counter = 0;
-  int read_counter = 0;
+  size_t nitems = 4000 / sizeof(size_t);
+  size_t write_counter = 0;
+  size_t read_counter = 0;
 
-  gr::buffer_sptr buf(gr::make_buffer(nitems, sizeof(int), gr::block_sptr()));
+  if (large)
+    nitems += (static_cast<size_t>(std::numeric_limits<int>::max()) + 1) * 2;
+
+  gr::buffer_sptr buf(gr::make_buffer(nitems, sizeof(size_t), gr::block_sptr()));
   gr::buffer_reader_sptr r1(gr::buffer_add_reader(buf, 0, gr::block_sptr()));
 
-  int sa;
+  size_t sa;
 
   // write 1/3 of buffer
 
   sa = buf->space_available();
   CPPUNIT_ASSERT(sa > 0);
 
-  int *p = (int*)buf->write_pointer();
+  size_t *p = (size_t*)buf->write_pointer();
   CPPUNIT_ASSERT(p != 0);
 
-  for(int j = 0; j < sa/3; j++) {
+  for(size_t j = 0; j < sa/3; j++) {
     *p++ = write_counter++;
   }
   buf->update_write_pointer(sa/3);
@@ -111,23 +117,23 @@ t1_body()
   sa = buf->space_available();
   CPPUNIT_ASSERT(sa > 0);
 
-  p = (int*)buf->write_pointer();
+  p = (size_t*)buf->write_pointer();
   CPPUNIT_ASSERT(p != 0);
 
-  for(int j = 0; j < sa/2; j++) {
+  for(size_t j = 0; j < sa/2; j++) {
     *p++ = write_counter++;
   }
   buf->update_write_pointer(sa/2);
 
   // check that we can read it OK
 
-  int ia = r1->items_available();
+  size_t ia = r1->items_available();
   CPPUNIT_ASSERT_EQUAL(write_counter, ia);
 
-  int *rp = (int*)r1->read_pointer();
+  size_t *rp = (size_t*)r1->read_pointer();
   CPPUNIT_ASSERT(rp != 0);
 
-  for(int i = 0; i < ia/2; i++) {
+  for(size_t i = 0; i < ia/2; i++) {
     CPPUNIT_ASSERT_EQUAL(read_counter, *rp);
     read_counter++;
     rp++;
@@ -137,10 +143,10 @@ t1_body()
   // read the rest
 
   ia = r1->items_available();
-  rp = (int *) r1->read_pointer();
+  rp = (size_t *) r1->read_pointer();
   CPPUNIT_ASSERT(rp != 0);
 
-  for(int i = 0; i < ia; i++) {
+  for(size_t i = 0; i < ia; i++) {
     CPPUNIT_ASSERT_EQUAL(read_counter, *rp);
     read_counter++;
     rp++;
@@ -153,38 +159,42 @@ t1_body()
 //
 
 static void
-t2_body()
+t2_body(bool large)
 {
   // 64K is the largest granularity we've seen so far (MS windows file mapping).
   // This allows a bit of "white box testing"
+  size_t nitems;
 
-  int nitems = (64 * (1L << 10)) / sizeof(int);  // 64K worth of ints
+  if (large)
+    nitems = (static_cast<size_t>(std::numeric_limits<int>::max()) + 1) * 2;
+  else
+    nitems = (64 * (1L << 10)) / sizeof(size_t);  // 64K worth of size_t's
 
-  gr::buffer_sptr buf(gr::make_buffer(nitems, sizeof(int), gr::block_sptr()));
+  gr::buffer_sptr buf(gr::make_buffer(nitems, sizeof(size_t), gr::block_sptr()));
   gr::buffer_reader_sptr r1(gr::buffer_add_reader(buf, 0, gr::block_sptr()));
 
-  int read_counter = 0;
-  int write_counter = 0;
-  int n;
-  int *wp = 0;
-  int *rp = 0;
+  size_t read_counter = 0;
+  size_t write_counter = 0;
+  size_t n;
+  size_t *wp = 0;
+  size_t *rp = 0;
 
   // Write 3/4 of buffer
 
-  n = (int)(buf->space_available() * 0.75);
-  wp = (int*)buf->write_pointer();
+  n = (size_t)(buf->space_available() * 0.75);
+  wp = (size_t*)buf->write_pointer();
 
-  for(int i = 0; i < n; i++)
+  for(size_t i = 0; i < n; i++)
     *wp++ = write_counter++;
   buf->update_write_pointer(n);
 
   // Now read it all
 
-  int m = r1->items_available();
+  size_t m = r1->items_available();
   CPPUNIT_ASSERT_EQUAL(n, m);
-  rp = (int*)r1->read_pointer();
+  rp = (size_t*)r1->read_pointer();
 
-  for(int i = 0; i < m; i++) {
+  for(size_t i = 0; i < m; i++) {
     CPPUNIT_ASSERT_EQUAL(read_counter, *rp);
     read_counter++;
     rp++;
@@ -195,10 +205,11 @@ t2_body()
   // This will wrap around the buffer
 
   n = buf->space_available();
-  CPPUNIT_ASSERT_EQUAL(nitems - 1, n);    // white box test
-  wp = (int*)buf->write_pointer();
+  if (!large)
+    CPPUNIT_ASSERT_EQUAL(nitems - 1, n);    // white box test
+  wp = (size_t*)buf->write_pointer();
 
-  for(int i = 0; i < n; i++)
+  for(size_t i = 0; i < n; i++)
     *wp++ = write_counter++;
   buf->update_write_pointer(n);
 
@@ -206,9 +217,9 @@ t2_body()
 
   m = r1->items_available();
   CPPUNIT_ASSERT_EQUAL(n, m);
-  rp = (int*)r1->read_pointer();
+  rp = (size_t*)r1->read_pointer();
 
-  for(int i = 0; i < m; i++) {
+  for(size_t i = 0; i < m; i++) {
     CPPUNIT_ASSERT_EQUAL(read_counter, *rp);
     read_counter++;
     rp++;
@@ -221,15 +232,20 @@ t2_body()
 // ----------------------------------------------------------------------------
 
 static void
-t3_body()
+t3_body(bool large)
 {
-  int nitems = (64 * (1L << 10)) / sizeof(int);
+  size_t nitems;
+
+  if (large)
+    nitems = (static_cast<size_t>(std::numeric_limits<int>::max()) + 1) * 2;
+  else
+    nitems = (64 * (1L << 10)) / sizeof(size_t);
 
   static const int N = 5;
-  gr::buffer_sptr buf(gr::make_buffer(nitems, sizeof(int), gr::block_sptr()));
+  gr::buffer_sptr buf(gr::make_buffer(nitems, sizeof(size_t), gr::block_sptr()));
   gr::buffer_reader_sptr reader[N];
-  int read_counter[N];
-  int write_counter = 0;
+  size_t read_counter[N];
+  size_t write_counter = 0;
   gr::random random;
 
   for(int i = 0; i < N; i++) {
@@ -241,10 +257,10 @@ t3_body()
 
     // write some
 
-    int n = (int)(buf->space_available() * random.ran1());
-    int *wp = (int*)buf->write_pointer();
+    size_t n = (size_t)(buf->space_available() * random.ran1());
+    size_t *wp = (size_t*)buf->write_pointer();
 
-    for(int i = 0; i < n; i++)
+    for(size_t i = 0; i < n; i++)
       *wp++ = write_counter++;
 
     buf->update_write_pointer(n);
@@ -254,10 +270,10 @@ t3_body()
     int r = (int)(N * random.ran1());
     CPPUNIT_ASSERT(0 <= r && r < N);
 
-    int m = reader[r]->items_available();
-    int *rp = (int*)reader[r]->read_pointer();
+    size_t m = reader[r]->items_available();
+    size_t *rp = (size_t*)reader[r]->read_pointer();
 
-    for(int i = 0; i < m; i++) {
+    for(size_t i = 0; i < m; i++) {
       CPPUNIT_ASSERT_EQUAL(read_counter[r], *rp);
       read_counter[r]++;
       rp++;
@@ -272,33 +288,51 @@ t3_body()
 void
 qa_buffer::t0()
 {
-  leak_check(t0_body);
+  leak_check(t0_body, false);
 }
 
 void
 qa_buffer::t1()
 {
-  leak_check(t1_body);
+  leak_check(t1_body, false);
 }
 
 void
 qa_buffer::t2()
 {
-  leak_check(t2_body);
+  leak_check(t2_body, false);
 }
 
 void
 qa_buffer::t3()
 {
-  leak_check(t3_body);
+  leak_check(t3_body, false);
 }
 
 void
 qa_buffer::t4()
 {
+  if (sizeof(size_t) > sizeof(int))
+    leak_check(t0_body, true);
 }
 
 void
 qa_buffer::t5()
 {
+  if (sizeof(size_t) > sizeof(int))
+    leak_check(t1_body, true);
+}
+
+void
+qa_buffer::t6()
+{
+  if (sizeof(size_t) > sizeof(int))
+    leak_check(t2_body, true);
+}
+
+void
+qa_buffer::t7()
+{
+  if (sizeof(size_t) > sizeof(int))
+    leak_check(t3_body, true);
 }

@@ -47,7 +47,7 @@ namespace gr {
       if(nsamples < 1)
 	throw std::invalid_argument("feedforward_agc_cc_impl: nsamples must be >= 1");
 
-      set_history(nsamples);
+      set_history(static_cast<size_t>(nsamples));
     }
 
     feedforward_agc_cc_impl::~feedforward_agc_cc_impl()
@@ -73,8 +73,8 @@ namespace gr {
 	return i_abs + 0.4 * r_abs;
     }
 
-    int
-    feedforward_agc_cc_impl::work(int noutput_items,
+    ssize_t
+    feedforward_agc_cc_impl::work(size_t noutput_items,
 				  gr_vector_const_void_star &input_items,
 				  gr_vector_void_star &output_items)
     {
@@ -83,16 +83,16 @@ namespace gr {
       int nsamples = d_nsamples;
       float gain;
 
-      for(int i = 0; i < noutput_items; i++) {
+      for(size_t i = 0; i < noutput_items; i++) {
 	//float max_env = 1e-12;	// avoid divide by zero
 	float max_env = 1e-4;	// avoid divide by zero, indirectly set max gain
 	for(int j = 0; j < nsamples; j++) {
-	  max_env = std::max(max_env, envelope(in[i+j]));
+	  max_env = std::max(max_env, envelope(in[i+static_cast<size_t>(j)]));
 	}
 	gain = d_reference / max_env;
 	out[i] = gain * in[i];
       }
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace analog */

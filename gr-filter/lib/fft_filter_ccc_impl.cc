@@ -57,7 +57,7 @@ namespace gr {
 
       d_new_taps = taps;
       d_nsamples = d_filter->set_taps(taps);
-      set_output_multiple(d_nsamples);
+      set_output_multiple(static_cast<size_t>(d_nsamples));
     }
 
     fft_filter_ccc_impl::~fft_filter_ccc_impl()
@@ -94,8 +94,8 @@ namespace gr {
 	return 0;
     }
 
-    int
-    fft_filter_ccc_impl::work(int noutput_items,
+    ssize_t
+    fft_filter_ccc_impl::work(size_t noutput_items,
 			      gr_vector_const_void_star &input_items,
 			      gr_vector_void_star &output_items)
     {
@@ -105,13 +105,13 @@ namespace gr {
       if (d_updated){
 	d_nsamples = d_filter->set_taps(d_new_taps);
 	d_updated = false;
-	set_output_multiple(d_nsamples);
+        set_output_multiple(static_cast<size_t>(d_nsamples));
 	return 0;				// output multiple may have changed
       }
 
       d_filter->filter(noutput_items, in, out);
 
-      return noutput_items;
+      return static_cast<ssize_t>(noutput_items);
     }
 
   } /* namespace filter */
