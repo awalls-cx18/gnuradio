@@ -274,6 +274,18 @@ namespace gr {
      */
     double relative_rate() const { return d_relative_rate; }
 
+    /*!
+     * \brief return the numerator, or interpolation rate, of the
+     * approximate output rate / input rate
+     */
+    unsigned relative_rate_i() const { return d_rr_interpolation; }
+
+    /*!
+     * \brief return the denominator, or decimation rate, of the
+     * approximate output rate / input rate
+     */
+    unsigned relative_rate_d() const { return d_rr_decimation; }
+
     /*
      * The following two methods provide special case info to the
      * scheduler in the event that a block has a fixed input to output

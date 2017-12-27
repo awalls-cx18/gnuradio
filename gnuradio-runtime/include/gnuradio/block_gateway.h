@@ -185,6 +185,14 @@ namespace gr {
       return gr::block::relative_rate();
     }
 
+    unsigned block__relative_rate_i(void) const {
+      return gr::block::relative_rate_i();
+    }
+
+    unsigned block__relative_rate_d(void) const {
+      return gr::block::relative_rate_d();
+    }
+
     uint64_t block__nitems_read(unsigned int which_input) {
       return gr::block::nitems_read(which_input);
     }
