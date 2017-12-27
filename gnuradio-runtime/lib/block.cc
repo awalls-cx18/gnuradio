@@ -47,7 +47,6 @@ namespace gr {
       d_relative_rate (1.0),
       d_rr_interpolation(1),
       d_rr_decimation(1),
-      d_prefer_float_rr(false),
       d_history(1),
       d_attr_delay(0),
       d_fixed_rate(false),
@@ -180,28 +179,38 @@ namespace gr {
 
     d_relative_rate = relative_rate;
 
-    // Convert relative_rate to an integer ratio
-    unsigned int i;
-    double fraction, integer;
-    for (i = 1;
-         (fraction = std::modf(relative_rate * (double)i, &integer)) != 0.0
-         && i < 0x8000; // limit denominator to 32768 max
-         i <<= 1)
-        /* Do nothing, everything is computed in the for() clauses. */;
+    // Convert relative_rate to a rational approximation, within a certain
+    // tolerance, using a continued fraction expansion.
+    // This code is an adaptation of the algorithm in Octave's rat.m file
+    // (i.e. derived from code that is Copyright (C) 2001-2017 Paul Kienzle,
+    //  licensed under GPL v3).
+    double n, d;
+    double tolerance = 1e-6 * d_relative_rate;
+    double fraction, reciprocal, step;
+    double nextn, nextd;
+    double prevn, prevd;
 
-    // Prefer the passed in double relative_rate, if we truncate to
-    // have reasonably sized numerators and denominators.
-    d_prefer_float_rr = static_cast<bool>(i == 0x8000 && fraction != 0.0);
+    n = round(d_relative_rate);
+    d = 1.0;
+    fraction = d_relative_rate - n;
+    prevn = 1.0;
+    prevd = 0.0;
 
-    d_rr_interpolation = static_cast<unsigned>(integer);
-    d_rr_decimation = i;
+    while (std::abs(d_relative_rate-n/d) >= tolerance) {
+      reciprocal = 1.0/fraction;
+      step = round(reciprocal);
+      fraction = reciprocal-step;
 
-    // Simplify the ratio by the GCD of the numerator and denominator
-    unsigned gcd = boost::math::gcd(d_rr_interpolation, d_rr_decimation);
-    if (gcd != 1) {
-      d_rr_interpolation /= gcd;
-      d_rr_decimation /= gcd;
+      nextn = n * step + prevn;
+      nextd = d * step + prevd;
+      prevn = n;
+      prevd = d;
+      n = nextn;
+      d = nextd;
     }
+
+    d_rr_interpolation = static_cast<unsigned>(n);
+    d_rr_decimation = static_cast<unsigned>(d);
   }
 
   void
@@ -224,7 +233,6 @@ namespace gr {
 
     d_relative_rate = static_cast<double>(d_rr_interpolation)
                       / static_cast<double>(d_rr_decimation);
-    d_prefer_float_rr = false;
   }
 
   void

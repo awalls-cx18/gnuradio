@@ -661,7 +661,6 @@ namespace gr {
     double                d_relative_rate;	// approx output_rate / input_rate
     unsigned              d_rr_interpolation;
     unsigned              d_rr_decimation;
-    bool                  d_prefer_float_rr;
     block_detail_sptr     d_detail;		// implementation details
     unsigned              d_history;
     unsigned              d_attr_delay;         // the block's sample delay
