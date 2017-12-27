@@ -51,7 +51,7 @@ namespace gr {
     void set_interpolation(unsigned interpolation)
     {
       d_interpolation = interpolation;
-      set_relative_rate(1.0 * interpolation);
+      set_relative_rate(interpolation, 1);
       set_output_multiple(interpolation);
     }
 
