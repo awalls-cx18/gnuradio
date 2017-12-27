@@ -54,7 +54,7 @@ namespace gr {
     bool
     deinterleave_impl::check_topology(int ninputs, int noutputs)
     {
-      set_relative_rate(1.0/(double)noutputs);
+      set_relative_rate(1, (unsigned)noutputs);
       d_noutputs = noutputs;
       return true;
     }

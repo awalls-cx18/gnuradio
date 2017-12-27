@@ -57,7 +57,7 @@ namespace gr {
     d_noise_seed(noise_seed)
     {
       //set_relative_rate(1.0 / interp_ratio);
-      set_relative_rate(1.0);
+      set_relative_rate(1, 1);
     }
 
     sro_model_impl::~sro_model_impl()
