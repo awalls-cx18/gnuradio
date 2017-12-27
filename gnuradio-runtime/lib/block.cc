@@ -209,6 +209,12 @@ namespace gr {
       d = nextd;
     }
 
+    // Fixup results with negative signs (e.g. 0.9 = -9.0/-10.0)
+    if (d < 0.0) {
+      n = -n;
+      d = -d;
+    }
+
     d_rr_interpolation = static_cast<unsigned>(n);
     d_rr_decimation = static_cast<unsigned>(d);
   }
