@@ -259,6 +259,17 @@ namespace gr {
     void set_relative_rate(double relative_rate);
 
     /*!
+     * \brief Set the approximate output rate / input rate as an integer ratio
+     *
+     * Provide a hint to the buffer allocator and scheduler.
+     * The default relative_rate is interpolation / decimation = 1 / 1
+     *
+     * decimators have relative_rates < 1.0
+     * interpolators have relative_rates > 1.0
+     */
+    void set_relative_rate(unsigned interpolation, unsigned decimation);
+
+    /*!
      * \brief return the approximate output rate / input rate
      */
     double relative_rate() const { return d_relative_rate; }
@@ -648,6 +659,9 @@ namespace gr {
     int                   d_unaligned;
     bool                  d_is_unaligned;
     double                d_relative_rate;	// approx output_rate / input_rate
+    unsigned              d_rr_interpolation;
+    unsigned              d_rr_decimation;
+    bool                  d_prefer_float_rr;
     block_detail_sptr     d_detail;		// implementation details
     unsigned              d_history;
     unsigned              d_attr_delay;         // the block's sample delay

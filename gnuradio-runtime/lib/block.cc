@@ -31,6 +31,8 @@
 #include <gnuradio/prefs.h>
 #include <stdexcept>
 #include <iostream>
+#include <cmath>
+#include <boost/math/common_factor_rt.hpp>
 
 namespace gr {
 
@@ -43,6 +45,9 @@ namespace gr {
       d_unaligned(0),
       d_is_unaligned(false),
       d_relative_rate (1.0),
+      d_rr_interpolation(1),
+      d_rr_decimation(1),
+      d_prefer_float_rr(false),
       d_history(1),
       d_attr_delay(0),
       d_fixed_rate(false),
@@ -170,10 +175,56 @@ namespace gr {
   void
   block::set_relative_rate(double relative_rate)
   {
-    if(relative_rate < 0.0)
-      throw std::invalid_argument("block::set_relative_rate");
+    if(relative_rate <= 0.0)
+      throw std::invalid_argument("block::set_relative_rate: relative rate must be > 0.0");
 
     d_relative_rate = relative_rate;
+
+    // Convert relative_rate to an integer ratio
+    unsigned int i;
+    double fraction, integer;
+    for (i = 1;
+         (fraction = std::modf(relative_rate * (double)i, &integer)) != 0.0
+         && i < 0x8000; // limit denominator to 32768 max
+         i <<= 1)
+        /* Do nothing, everything is computed in the for() clauses. */;
+
+    // Prefer the passed in double relative_rate, if we truncate to
+    // have reasonably sized numerators and denominators.
+    d_prefer_float_rr = static_cast<bool>(i == 0x8000 && fraction != 0.0);
+
+    d_rr_interpolation = static_cast<unsigned>(integer);
+    d_rr_decimation = i;
+
+    // Simplify the ratio by the GCD of the numerator and denominator
+    unsigned gcd = boost::math::gcd(d_rr_interpolation, d_rr_decimation);
+    if (gcd != 1) {
+      d_rr_interpolation /= gcd;
+      d_rr_decimation /= gcd;
+    }
+  }
+
+  void
+  block::set_relative_rate(unsigned interpolation, unsigned decimation)
+  {
+    if (interpolation < 1)
+      throw std::invalid_argument("block::set_relative_rate: interpolation rate cannot be 0");
+
+    if (decimation < 1)
+      throw std::invalid_argument("block::set_relative_rate: decimation rate cannot be 0");
+
+    d_rr_interpolation = interpolation;
+    d_rr_decimation = decimation;
+    // Simplify the ratio by the GCD of the numerator and denominator
+    unsigned gcd = boost::math::gcd(d_rr_interpolation, d_rr_decimation);
+    if (gcd != 1) {
+      d_rr_interpolation /= gcd;
+      d_rr_decimation /= gcd;
+    }
+
+    d_relative_rate = static_cast<double>(d_rr_interpolation)
+                      / static_cast<double>(d_rr_decimation);
+    d_prefer_float_rr = false;
   }
 
   void

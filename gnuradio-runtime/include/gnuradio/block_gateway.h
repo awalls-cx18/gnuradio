@@ -177,6 +177,10 @@ namespace gr {
       return gr::block::set_relative_rate(relative_rate);
     }
 
+    void block__set_relative_rate(unsigned interpolation, unsigned decimation) {
+      return gr::block::set_relative_rate(interpolation, decimation);
+    }
+
     double block__relative_rate(void) const {
       return gr::block::relative_rate();
     }
