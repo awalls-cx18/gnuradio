@@ -94,9 +94,11 @@ namespace gr {
   static bool
   propagate_tags(block::tag_propagation_policy_t policy, block_detail *d,
                  const std::vector<uint64_t> &start_nitems_read, double rrate,
-                 uint64_t rrate_i, uint64_t rrate_d, bool use_fp_rrate,
+                 mpq_class &mp_rrate, bool use_fp_rrate,
                  std::vector<tag_t> &rtags, long block_id)
   {
+    static const mpq_class one_half(1, 2);
+
     // Move tags downstream
     // if a sink, we don't need to move downstream
     if(d->sink_p()) {
@@ -141,16 +143,11 @@ namespace gr {
           }
         }
         else {
+          mpz_class offset;
           for(t = rtags.begin(); t != rtags.end(); t++) {
             tag_t new_tag = *t;
-            if(rrate_i > 1) {
-              new_tag.offset *= rrate_i;
-            }
-            if(rrate_d > 1) {
-              new_tag.offset = (new_tag.offset % rrate_d) <= (rrate_d / 2)
-                               ? new_tag.offset / rrate_d
-                               : new_tag.offset / rrate_d + 1;
-            }
+            offset = new_tag.offset * mp_rrate + one_half;
+            new_tag.offset = offset.get_ui();
             for(int o = 0; o < d->noutputs(); o++)
               out_buf[o]->add_item_tag(new_tag);
           }
@@ -188,16 +185,11 @@ namespace gr {
             }
           }
           else {
+            mpz_class offset;
             for(t = rtags.begin(); t != rtags.end(); t++) {
               tag_t new_tag = *t;
-              if(rrate_i > 1) {
-                new_tag.offset *= rrate_i;
-              }
-              if(rrate_d > 1) {
-                new_tag.offset = (new_tag.offset % rrate_d) <= (rrate_d / 2)
-                                 ? new_tag.offset / rrate_d
-                                 : new_tag.offset / rrate_d + 1;
-              }
+              offset = new_tag.offset * mp_rrate + one_half;
+              new_tag.offset = offset.get_ui();
               out_buf->add_item_tag(new_tag);
             }
           }
@@ -524,8 +516,7 @@ namespace gr {
       // Now propagate the tags based on the new relative rate
       if(!propagate_tags(m->tag_propagation_policy(), d,
                          d_start_nitems_read, m->relative_rate(),
-                         (uint64_t) m->relative_rate_i(),
-                         (uint64_t) m->relative_rate_d(), m->update_rate(),
+                         m->mp_relative_rate(), m->update_rate(),
                          d_returned_tags, m->unique_id()))
         goto were_done;
 
@@ -544,7 +535,7 @@ namespace gr {
         //if(rrate > 0.0)
         //  m->set_relative_rate(rrate);
         if((n > 0) && (d->consumed() > 0))
-          m->set_relative_rate((unsigned)n, (unsigned)d->consumed());
+          m->set_relative_rate((uint64_t)n, (uint64_t)d->consumed());
       }
 
       if(d->d_produce_or > 0)   // block produced something

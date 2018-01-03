@@ -51,8 +51,8 @@ namespace gr {
         d_output_item_size(output_item_size)
     {
       set_fixed_rate(true);
-      set_relative_rate((unsigned)my_encoder->get_output_size(),
-                        (unsigned)my_encoder->get_input_size());
+      set_relative_rate((uint64_t)my_encoder->get_output_size(),
+                        (uint64_t)my_encoder->get_input_size());
       set_output_multiple(my_encoder->get_output_size());
       d_encoder = my_encoder;
 

@@ -113,7 +113,7 @@ namespace gr {
       d_new_in = 0;
       d_last_out = 0;
 
-      set_relative_rate((unsigned)d_osps, (unsigned)d_sps);
+      set_relative_rate((uint64_t)d_osps, (uint64_t)d_sps);
     }
 
     pfb_clock_sync_ccf_impl::~pfb_clock_sync_ccf_impl()

@@ -115,8 +115,8 @@ namespace gr {
       for (unsigned i = 0; i < d_occupied_carriers.size(); i++) {
 	d_symbols_per_set += d_occupied_carriers[i].size();
       }
-      set_relative_rate((unsigned) d_symbols_per_set,
-                        (unsigned) d_occupied_carriers.size());
+      set_relative_rate((uint64_t) d_symbols_per_set,
+                        (uint64_t) d_occupied_carriers.size());
       set_tag_propagation_policy(TPP_DONT);
     }
 

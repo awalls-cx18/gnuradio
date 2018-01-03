@@ -45,8 +45,7 @@ namespace gr {
       d_unaligned(0),
       d_is_unaligned(false),
       d_relative_rate (1.0),
-      d_rr_interpolation(1),
-      d_rr_decimation(1),
+      d_mp_relative_rate(1.0),
       d_history(1),
       d_attr_delay(0),
       d_fixed_rate(false),
@@ -178,49 +177,11 @@ namespace gr {
       throw std::invalid_argument("block::set_relative_rate: relative rate must be > 0.0");
 
     d_relative_rate = relative_rate;
-
-    // Convert relative_rate to a rational approximation, within a certain
-    // tolerance, using a continued fraction expansion.
-    // This code is an adaptation of the algorithm in Octave's rat.m file
-    // (i.e. derived from code that is Copyright (C) 2001-2017 Paul Kienzle,
-    //  licensed under GPL v3).
-    double n, d;
-    double tolerance = 1e-6 * d_relative_rate;
-    double fraction, reciprocal, step;
-    double nextn, nextd;
-    double prevn, prevd;
-
-    n = round(d_relative_rate);
-    d = 1.0;
-    fraction = d_relative_rate - n;
-    prevn = 1.0;
-    prevd = 0.0;
-
-    while (std::abs(d_relative_rate-n/d) >= tolerance) {
-      reciprocal = 1.0/fraction;
-      step = round(reciprocal);
-      fraction = reciprocal-step;
-
-      nextn = n * step + prevn;
-      nextd = d * step + prevd;
-      prevn = n;
-      prevd = d;
-      n = nextn;
-      d = nextd;
-    }
-
-    // Fixup results with negative signs (e.g. 0.9 = -9.0/-10.0)
-    if (d < 0.0) {
-      n = -n;
-      d = -d;
-    }
-
-    d_rr_interpolation = static_cast<unsigned>(n);
-    d_rr_decimation = static_cast<unsigned>(d);
+    d_mp_relative_rate = mpq_class(relative_rate);
   }
 
   void
-  block::set_relative_rate(unsigned interpolation, unsigned decimation)
+  block::set_relative_rate(uint64_t interpolation, uint64_t decimation)
   {
     if (interpolation < 1)
       throw std::invalid_argument("block::set_relative_rate: interpolation rate cannot be 0");
@@ -228,17 +189,9 @@ namespace gr {
     if (decimation < 1)
       throw std::invalid_argument("block::set_relative_rate: decimation rate cannot be 0");
 
-    d_rr_interpolation = interpolation;
-    d_rr_decimation = decimation;
-    // Simplify the ratio by the GCD of the numerator and denominator
-    unsigned gcd = boost::math::gcd(d_rr_interpolation, d_rr_decimation);
-    if (gcd != 1) {
-      d_rr_interpolation /= gcd;
-      d_rr_decimation /= gcd;
-    }
-
-    d_relative_rate = static_cast<double>(d_rr_interpolation)
-                      / static_cast<double>(d_rr_decimation);
+    d_mp_relative_rate = mpq_class(interpolation, decimation);
+    d_mp_relative_rate.canonicalize();
+    d_relative_rate = d_mp_relative_rate.get_d();
   }
 
   void

@@ -177,7 +177,7 @@ namespace gr {
       return gr::block::set_relative_rate(relative_rate);
     }
 
-    void block__set_relative_rate(unsigned interpolation, unsigned decimation) {
+    void block__set_relative_rate(uint64_t interpolation, uint64_t decimation) {
       return gr::block::set_relative_rate(interpolation, decimation);
     }
 
@@ -185,11 +185,11 @@ namespace gr {
       return gr::block::relative_rate();
     }
 
-    unsigned block__relative_rate_i(void) const {
+    uint64_t block__relative_rate_i(void) const {
       return gr::block::relative_rate_i();
     }
 
-    unsigned block__relative_rate_d(void) const {
+    uint64_t block__relative_rate_d(void) const {
       return gr::block::relative_rate_d();
     }
 

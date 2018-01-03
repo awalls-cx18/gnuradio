@@ -50,8 +50,8 @@ class gr::block : public gr::basic_block
 
   int  output_multiple () const;
   double relative_rate () const;
-  unsigned relative_rate_i () const;
-  unsigned relative_rate_d () const;
+  uint64_t relative_rate_i () const;
+  uint64_t relative_rate_d () const;
 
   bool start();
   bool stop();

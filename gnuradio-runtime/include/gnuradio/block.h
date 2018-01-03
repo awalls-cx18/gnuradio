@@ -27,6 +27,7 @@
 #include <gnuradio/basic_block.h>
 #include <gnuradio/tags.h>
 #include <gnuradio/logger.h>
+#include <mpirxx.h>
 
 namespace gr {
 
@@ -267,7 +268,7 @@ namespace gr {
      * decimators have relative_rates < 1.0
      * interpolators have relative_rates > 1.0
      */
-    void set_relative_rate(unsigned interpolation, unsigned decimation);
+    void set_relative_rate(uint64_t interpolation, uint64_t decimation);
 
     /*!
      * \brief return the approximate output rate / input rate
@@ -278,13 +279,21 @@ namespace gr {
      * \brief return the numerator, or interpolation rate, of the
      * approximate output rate / input rate
      */
-    unsigned relative_rate_i() const { return d_rr_interpolation; }
+    uint64_t relative_rate_i() const {
+      return (uint64_t) d_mp_relative_rate.get_num().get_ui(); }
 
     /*!
      * \brief return the denominator, or decimation rate, of the
      * approximate output rate / input rate
      */
-    unsigned relative_rate_d() const { return d_rr_decimation; }
+    uint64_t relative_rate_d() const {
+      return (uint64_t) d_mp_relative_rate.get_den().get_ui(); }
+
+    /*!
+     * \brief return a reference to the multiple precision rational
+     * represntation of the approximate output rate / input rate
+     */
+    mpq_class &mp_relative_rate() { return d_mp_relative_rate; }
 
     /*
      * The following two methods provide special case info to the
@@ -671,8 +680,7 @@ namespace gr {
     int                   d_unaligned;
     bool                  d_is_unaligned;
     double                d_relative_rate;	// approx output_rate / input_rate
-    unsigned              d_rr_interpolation;
-    unsigned              d_rr_decimation;
+    mpq_class             d_mp_relative_rate;
     block_detail_sptr     d_detail;		// implementation details
     unsigned              d_history;
     unsigned              d_attr_delay;         // the block's sample delay
