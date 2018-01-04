@@ -181,6 +181,17 @@ namespace gr {
   }
 
   void
+  block::set_inverse_relative_rate(double inverse_relative_rate)
+  {
+    if(inverse_relative_rate <= 0.0)
+      throw std::invalid_argument("block::set_inverse_relative_rate: inverse relative rate must be > 0.0");
+
+    mpq_class inv_rr_q(inverse_relative_rate);
+    set_relative_rate((uint64_t) inv_rr_q.get_den().get_ui(),
+                      (uint64_t) inv_rr_q.get_num().get_ui());
+  }
+
+  void
   block::set_relative_rate(uint64_t interpolation, uint64_t decimation)
   {
     if (interpolation < 1)

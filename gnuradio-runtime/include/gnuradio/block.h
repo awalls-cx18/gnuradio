@@ -260,6 +260,16 @@ namespace gr {
     void set_relative_rate(double relative_rate);
 
     /*!
+     * \brief Set the approximate output rate / input rate
+     * using its reciprocal
+     *
+     * This is a convenience function to avoid
+     * numerical problems with tag propagation that calling
+     * set_relative_rate(1.0/relative_rate) might introduce.
+     */
+    void set_inverse_relative_rate(double inverse_relative_rate);
+
+    /*!
      * \brief Set the approximate output rate / input rate as an integer ratio
      *
      * Provide a hint to the buffer allocator and scheduler.
