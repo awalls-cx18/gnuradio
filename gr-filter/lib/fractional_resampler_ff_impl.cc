@@ -145,25 +145,25 @@ namespace gr {
     float
     fractional_resampler_ff_impl::mu() const
     {
-      return d_mu;
+      return (float)d_mu;
     }
 
     float
     fractional_resampler_ff_impl::resamp_ratio() const
     {
-      return d_mu_inc;
+      return (float)d_mu_inc;
     }
 
     void
     fractional_resampler_ff_impl::set_mu(float mu)
     {
-      d_mu = mu;
+      d_mu = (double)mu;
     }
 
     void
     fractional_resampler_ff_impl::set_resamp_ratio(float resamp_ratio)
     {
-      d_mu_inc = resamp_ratio;
+      d_mu_inc = (double)resamp_ratio;
     }
 
   } /* namespace filter */
