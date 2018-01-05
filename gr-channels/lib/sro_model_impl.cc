@@ -56,7 +56,7 @@ namespace gr {
     d_noise(gr::analog::fastnoise_source_f::make(analog::GR_GAUSSIAN, std_dev_hz, noise_seed)),
     d_noise_seed(noise_seed)
     {
-      //set_relative_rate(1.0 / interp_ratio);
+      //set_inverse_relative_rate(interp_ratio);
       set_relative_rate(1, 1);
     }
 
