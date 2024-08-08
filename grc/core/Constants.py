@@ -112,6 +112,12 @@ CORE_TYPES = (  # name, key, sizeof, color
     ('Bits (unpacked byte)', 'bit', 1, GRC_COLOR_PURPLE_A100),
     ('Async Message', 'message', 0, GRC_COLOR_GREY),
     ('Bus Connection', 'bus', 0, GRC_COLOR_WHITE),
+    ('TS/UDP', 'udpts', 0, GRC_COLOR_BLUE),
+    ('SRT Caller', 'srtcall', 0, GRC_COLOR_AMBER),
+    ('SRT Listener', 'srtlisten', 0, GRC_COLOR_ORANGE),
+    ('RTP', 'rtp', 0, GRC_COLOR_LIGHT_GREEN),
+    ('RTP-FEC', 'rtpfec', 0, GRC_COLOR_GREEN),
+    ('TCP', 'tcp', 0, GRC_COLOR_YELLOW),
     ('Wildcard', '', 0, GRC_COLOR_WHITE),
 )
 

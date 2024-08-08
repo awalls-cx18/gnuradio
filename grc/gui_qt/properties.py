@@ -211,6 +211,12 @@ class Colors(object):
     MESSAGE_QUEUE = '#777777'
     ASYNC_MESSAGE = '#C0C0C0'
     BUS_CONNECTION = '#FFFFFF'
+    TS_UDP = '#3399FF'
+    SRT_CALLER = '#CCCC00'
+    SRT_LISTENER = '#FF8C69'
+    RTP = '#66CC00'
+    RTP_FEC = '#33CC66'
+    TCP = '#FFFF66'
     WILDCARD = '#FFFFFF'
 
     COMPLEX_VECTOR = '#3399AA'
@@ -242,6 +248,12 @@ class Types(object):
         'msg': (0, Colors.MESSAGE_QUEUE, 'Message Queue'),
         'message': (0, Colors.ASYNC_MESSAGE, 'Async Message'),
         'bus': (0, Colors.BUS_CONNECTION, 'Bus Connection'),
+        'udpts': (0, Colors.TS_UDP, 'TS/UDP'),
+        'srtcall': (0, Colors.SRT_CALLER, 'SRT Caller'),
+        'srtlisten': (0, Colors.SRT_LISTENER, 'SRT Listener'),
+        'rtp': (0, Colors.RTP, 'RTP'),
+        'rtpfec': (0, Colors.RTP_FEC, 'RTP-FEC'),
+        'tcp': (0, Colors.TCP, 'TCP'),
         '': (0, Colors.WILDCARD, 'Wildcard')
     }
 
