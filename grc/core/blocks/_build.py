@@ -112,7 +112,7 @@ def build_params(params_raw, have_inputs, have_outputs, flags, block_id):
     else:
         add_param(id='id', name='ID', dtype='id', hide='all')
 
-    if not flags.not_dsp:
+    if flags.NOT_DSP not in flags:
         add_param(id='alias', name='Block Alias', dtype='string',
                   hide='part', category=ADVANCED_PARAM_TAB)
 
