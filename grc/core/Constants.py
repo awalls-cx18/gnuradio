@@ -118,6 +118,10 @@ CORE_TYPES = (  # name, key, sizeof, color
     ('RTP', 'rtp', 0, GRC_COLOR_LIGHT_GREEN),
     ('RTP-FEC', 'rtpfec', 0, GRC_COLOR_GREEN),
     ('TCP', 'tcp', 0, GRC_COLOR_YELLOW),
+    ('Flow NM', 'flownm', 0, GRC_COLOR_LIME),
+    ('Flow UDP', 'flowudp', 0, GRC_COLOR_TEAL),
+    ('Flow TCP', 'flowtcp', 0, GRC_COLOR_PURPLE),
+    ('Flow NOP', 'flownop', 0, GRC_COLOR_BLUE),
     ('Wildcard', '', 0, GRC_COLOR_WHITE),
 )
 

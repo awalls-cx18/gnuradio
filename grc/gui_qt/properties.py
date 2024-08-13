@@ -217,6 +217,10 @@ class Colors(object):
     RTP = '#66CC00'
     RTP_FEC = '#33CC66'
     TCP = '#FFFF66'
+    FLOW_NM = '#99FF33'
+    FLOW_UDP = '#00FF99'
+    FLOW_TCP = '#cc00cc'
+    FLOW_NOP = '#3399FF'
     WILDCARD = '#FFFFFF'
 
     COMPLEX_VECTOR = '#3399AA'
@@ -254,6 +258,10 @@ class Types(object):
         'rtp': (0, Colors.RTP, 'RTP'),
         'rtpfec': (0, Colors.RTP_FEC, 'RTP-FEC'),
         'tcp': (0, Colors.TCP, 'TCP'),
+        'flownm': (0, Colors.FLOW_NM, 'Flow NM'),
+        'flowudp': (0, Colors.FLOW_UDP, 'Flow UDP'),
+        'flowtcp': (0, Colors.FLOW_TCP, 'Flow TCP'),
+        'flownop': (0, Colors.FLOW_NOP, 'Flow NOP'),
         '': (0, Colors.WILDCARD, 'Wildcard')
     }
 
