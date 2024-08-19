@@ -221,6 +221,7 @@ class Colors(object):
     FLOW_UDP = '#00FF99'
     FLOW_TCP = '#cc00cc'
     FLOW_NOP = '#3399FF'
+    MOON = '#CC8C69'
     WILDCARD = '#FFFFFF'
 
     COMPLEX_VECTOR = '#3399AA'
@@ -262,6 +263,7 @@ class Types(object):
         'flowudp': (0, Colors.FLOW_UDP, 'Flow UDP'),
         'flowtcp': (0, Colors.FLOW_TCP, 'Flow TCP'),
         'flownop': (0, Colors.FLOW_NOP, 'Flow NOP'),
+        'moon': (0, Colors.MOON, 'MOON'),
         '': (0, Colors.WILDCARD, 'Wildcard')
     }
 
